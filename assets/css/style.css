@@ -86,6 +86,14 @@ img { max-width: 100%; display: block; }
 
 .brand .emoji { font-size: 1.4rem; }
 
+.brand-logo {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
 .brand .accent { color: var(--accent); }
 
 .nav-links {
@@ -783,6 +791,17 @@ img { max-width: 100%; display: block; }
   color: var(--text);
   margin: 0 0 12px;
   font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.footer-logo {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  object-fit: cover;
+  flex-shrink: 0;
 }
 
 .footer-grid ul { list-style: none; margin: 0; padding: 0; }
