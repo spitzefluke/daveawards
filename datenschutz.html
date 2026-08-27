@@ -15,10 +15,10 @@
     <button class="nav-toggle" aria-label="Menü öffnen" aria-expanded="false">☰</button>
     <ul class="nav-links">
       <li><a href="index.html">Start</a></li>
-      <li><a href="kategorien.html">Kategorien &amp; Voting</a></li>
+      <li><a href="kategorien.html">Kategorien</a></li>
       <li><a href="regeln.html">Regeln &amp; FAQ</a></li>
       <li><a href="gewinner.html">Gewinner</a></li>
-      <li><a href="teilnehmen.html" class="nav-cta">Mitmachen</a></li>
+      <li><a href="teilnehmen.html" class="nav-cta">Clip einreichen</a></li>
     </ul>
   </nav>
 </header>
@@ -31,10 +31,10 @@
 
       <div class="demo-note">
         ℹ️ <strong>Hinweis für Betreiber:innen:</strong> Diese Vorlage deckt den
-        aktuellen technischen Stand der Seite ab (statische Seite + localStorage).
-        Sobald ein echtes Backend, Analyse-Tools, ein Hoster mit Server-Logs oder ein
-        externes Formular-/Discord-Einbindung hinzukommen, muss dieser Text ergänzt werden.
-        Diese Vorlage ersetzt keine Rechtsberatung.
+        aktuellen technischen Stand der Seite ab (statische Seite + Supabase als
+        Backend für Einreichungen und Jury-Login). Sobald weitere Analyse-Tools
+        oder Dienste hinzukommen, muss dieser Text ergänzt werden. Diese Vorlage
+        ersetzt keine Rechtsberatung.
       </div>
 
       <h2>1. Verantwortlicher</h2>
@@ -43,17 +43,28 @@
         <a href="impressum.html">Impressum</a> genannte Person.
       </p>
 
-      <h2>2. Lokale Speicherung des Votings (localStorage)</h2>
+      <h2>2. Einreichungen (Clip-Links) über Supabase</h2>
       <p>
-        Für die Voting-Funktion auf der Seite „Kategorien &amp; Voting" wird eure
-        Stimme ausschließlich lokal in eurem Browser über die Funktion
-        <code>localStorage</code> gespeichert. Diese Daten verlassen euer Gerät nicht
-        und werden nicht an einen Server übertragen. Wir haben keinen Zugriff auf
-        diese Daten. Ihr könnt sie jederzeit über die Browsereinstellungen
-        (Website-Daten löschen) selbst entfernen.
+        Wenn ihr über das <a href="teilnehmen.html">Einreichungsformular</a> einen
+        Clip einreicht, werden der Link, die gewählte Kategorie sowie die von euch
+        freiwillig angegebenen Zusatzangaben (Name/Twitch-Name, Begründung) an
+        unseren Datenbank-Dienstleister <strong>Supabase Inc.</strong> übertragen
+        und dort gespeichert, damit die Jury eure Einreichung sichten kann.
+        Diese Daten sind für normale Besucher:innen der Website nicht einsehbar –
+        nur eingeloggte Jury-Mitglieder können sie sehen und bewerten. [Hinweis für
+        Betreiber:innen: Serverstandort und Auftragsverarbeitungsvertrag (AVV) von
+        Supabase prüfen und hier ergänzen.]
       </p>
 
-      <h2>3. Hosting</h2>
+      <h2>3. Jury-Login</h2>
+      <p>
+        Der Login für den Jury-Bereich läuft über die Authentifizierungsfunktion
+        von Supabase (E-Mail-Adresse + Passwort). Es werden dabei nur die für den
+        Login notwendigen Daten (E-Mail-Adresse, verschlüsseltes Passwort,
+        Zeitpunkt des Logins) verarbeitet.
+      </p>
+
+      <h2>4. Hosting</h2>
       <p>
         Beim Aufruf dieser Website verarbeitet der Hosting-Anbieter automatisch
         technische Zugriffsdaten (z. B. IP-Adresse, Datum/Uhrzeit, aufgerufene Seite),
@@ -61,7 +72,7 @@
         tatsächlich genutzten Hosters einsetzen, z. B. GitHub Pages, Netlify, Vercel.]
       </p>
 
-      <h2>4. Cookies &amp; Tracking</h2>
+      <h2>5. Cookies &amp; Tracking</h2>
       <p>
         Diese Website setzt in der Grundausstattung keine Analyse- oder
         Marketing-Cookies ein. Sollten zukünftig Tools wie Analytics eingebunden
@@ -69,21 +80,22 @@
         erforderlich – eine Einwilligung eingeholt.
       </p>
 
-      <h2>5. Externe Links (Discord, Formular)</h2>
+      <h2>6. Externe Links (Discord, E-Mail)</h2>
       <p>
-        Für Nominierungen verweisen wir ggf. auf externe Dienste wie Discord oder
-        Formular-Anbieter. Beim Wechsel auf diese Seiten gelten deren eigene
+        Für Rückfragen verweisen wir ggf. auf externe Dienste wie Discord oder
+        E-Mail-Anbieter. Beim Wechsel auf diese Dienste gelten deren eigene
         Datenschutzbestimmungen, auf die wir keinen Einfluss haben.
       </p>
 
-      <h2>6. Eure Rechte</h2>
+      <h2>7. Eure Rechte</h2>
       <p>
         Ihr habt nach der DSGVO grundsätzlich das Recht auf Auskunft, Berichtigung,
         Löschung und Einschränkung der Verarbeitung eurer personenbezogenen Daten
-        sowie ein Beschwerderecht bei einer Aufsichtsbehörde. Da diese Website in
-        ihrer Grundausstattung keine personenbezogenen Daten auf einem Server
-        speichert, betrifft dies vor allem Daten, die ihr uns freiwillig über
-        externe Kanäle (z. B. E-Mail, Discord, Formular) mitteilt.
+        sowie ein Beschwerderecht bei einer Aufsichtsbehörde. Das betrifft
+        insbesondere die Daten eurer Einreichung (siehe Punkt 2) sowie Daten, die
+        ihr uns freiwillig über externe Kanäle (z. B. E-Mail, Discord) mitteilt.
+        Wendet euch dazu an die im <a href="impressum.html">Impressum</a> genannte
+        Kontaktadresse.
       </p>
     </div>
   </section>
@@ -99,10 +111,11 @@
       <div>
         <h4>Seiten</h4>
         <ul>
-          <li><a href="kategorien.html">Kategorien &amp; Voting</a></li>
+          <li><a href="kategorien.html">Kategorien</a></li>
           <li><a href="regeln.html">Regeln &amp; FAQ</a></li>
           <li><a href="gewinner.html">Gewinner</a></li>
-          <li><a href="teilnehmen.html">Mitmachen</a></li>
+          <li><a href="teilnehmen.html">Clip einreichen</a></li>
+          <li><a href="jury.html">Jury-Login</a></li>
         </ul>
       </div>
       <div>
