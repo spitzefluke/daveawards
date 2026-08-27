@@ -1,4 +1,7 @@
-/* DaveAwards – Jury-Bereich: Login (Supabase Auth) + Bewertung der Einreichungen */
+/* DaveAwards – Jury-Bereich: Login (Supabase Auth), Einreichungs-Bewertung
+   und das gewichtete Gewinner-Voting (15% Jury / 25% Streamer-Jury / 60% Community) */
+
+let currentUserRole = "jury";
 
 document.addEventListener("DOMContentLoaded", () => {
   if (typeof supabaseClient === "undefined" || !supabaseClient) {
@@ -9,17 +12,52 @@ document.addEventListener("DOMContentLoaded", () => {
   wireLoginForm();
   wireLogoutButton();
   wireFilters();
+  wireTabs();
+  populateVotingCategorySelect();
 
   supabaseClient.auth.getSession().then(({ data }) => {
-    updateAuthView(!!data.session);
-    if (data.session) loadSubmissions();
+    handleAuthChange(data.session);
   });
 
   supabaseClient.auth.onAuthStateChange((_event, session) => {
-    updateAuthView(!!session);
-    if (session) loadSubmissions();
+    handleAuthChange(session);
   });
 });
+
+async function handleAuthChange(session) {
+  updateAuthView(!!session);
+  if (!session) return;
+
+  currentUserRole = await fetchCurrentUserRole();
+  applyRoleToUi(currentUserRole);
+  loadSubmissions();
+  loadVotingNominees();
+}
+
+async function fetchCurrentUserRole() {
+  const { data, error } = await supabaseClient
+    .from("jury_roles")
+    .select("role")
+    .maybeSingle();
+  if (error || !data) return "jury";
+  return data.role;
+}
+
+function applyRoleToUi(role) {
+  const label = document.querySelector("#jury-role-label");
+  if (label && typeof VOTER_TYPE_LABELS !== "undefined") {
+    label.textContent = VOTER_TYPE_LABELS[role] || role;
+  }
+  const curationTabBtn = document.querySelector("[data-tab-target='jury-tab-curation']");
+  const curationTab = document.querySelector("#jury-tab-curation");
+  if (role === "streamer_jury") {
+    if (curationTabBtn) curationTabBtn.style.display = "none";
+    if (curationTab) curationTab.style.display = "none";
+    switchTab("jury-tab-voting");
+  } else {
+    if (curationTabBtn) curationTabBtn.style.display = "";
+  }
+}
 
 function showConfigWarning() {
   const warning = document.querySelector("#jury-config-warning");
@@ -70,6 +108,23 @@ function wireLogoutButton() {
   });
 }
 
+/* ---------- Tabs ---------- */
+function wireTabs() {
+  document.querySelectorAll("[data-tab-target]").forEach((btn) => {
+    btn.addEventListener("click", () => switchTab(btn.dataset.tabTarget));
+  });
+}
+
+function switchTab(targetId) {
+  document.querySelectorAll("[data-tab-target]").forEach((btn) => {
+    btn.classList.toggle("active", btn.dataset.tabTarget === targetId);
+  });
+  document.querySelectorAll(".jury-tab").forEach((tab) => {
+    tab.style.display = tab.id === targetId ? "block" : "none";
+  });
+}
+
+/* ---------- Einreichungen prüfen (Kuration) ---------- */
 function wireFilters() {
   const categorySelect = document.querySelector("#jury-filter-category");
   const statusSelect = document.querySelector("#jury-filter-status");
@@ -201,6 +256,119 @@ function wireRowActions() {
       });
     });
   });
+}
+
+/* ---------- Gewinner wählen (gewichtetes Voting) ---------- */
+function populateVotingCategorySelect() {
+  const select = document.querySelector("#voting-filter-category");
+  if (!select || typeof CATEGORIES === "undefined") return;
+  select.innerHTML = CATEGORIES.map(
+    (cat) => `<option value="${cat.id}">${cat.icon} ${cat.name}</option>`
+  ).join("");
+  select.addEventListener("change", loadVotingNominees);
+  const refreshBtn = document.querySelector("#voting-refresh");
+  if (refreshBtn) refreshBtn.addEventListener("click", loadVotingNominees);
+}
+
+async function loadVotingNominees() {
+  const list = document.querySelector("#voting-list");
+  if (!list) return;
+
+  const categoryId = document.querySelector("#voting-filter-category")?.value;
+  if (!categoryId) return;
+
+  list.innerHTML = `<p class="jury-loading">Lade Nominierte…</p>`;
+
+  const { data: nominees, error } = await supabaseClient
+    .from("nominees")
+    .select("*")
+    .eq("category_id", categoryId)
+    .order("created_at", { ascending: true });
+
+  if (error) {
+    console.error(error);
+    list.innerHTML = `<p class="jury-loading">Fehler beim Laden der Nominierten.</p>`;
+    return;
+  }
+
+  if (!nominees || nominees.length === 0) {
+    list.innerHTML = `<p class="jury-loading">Für diese Kategorie gibt es noch keine von der Jury freigegebenen Nominierten.</p>`;
+    return;
+  }
+
+  const {
+    data: { user }
+  } = await supabaseClient.auth.getUser();
+
+  const { data: myVotes } = await supabaseClient
+    .from("votes")
+    .select("nominee_id")
+    .eq("category_id", categoryId)
+    .eq("voter_type", currentUserRole)
+    .eq("voter_id", user.id);
+
+  const myVoteNomineeId = myVotes && myVotes.length > 0 ? myVotes[0].nominee_id : null;
+
+  list.innerHTML = nominees.map((n) => renderNomineeVoteRow(n, myVoteNomineeId)).join("");
+
+  list.querySelectorAll("button[data-vote-nominee]").forEach((btn) => {
+    btn.addEventListener("click", () => castVote(categoryId, btn.dataset.voteNominee));
+  });
+}
+
+function renderNomineeVoteRow(nominee, myVoteNomineeId) {
+  const isMyVote = nominee.id === myVoteNomineeId;
+  const isSafeUrl = /^https?:\/\//i.test(nominee.clip_url || "");
+  const clipLinkHtml = isSafeUrl
+    ? `<a class="jury-link" href="${escapeAttr(nominee.clip_url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(nominee.clip_url)}</a>`
+    : `<span class="jury-link jury-link-unsafe">${escapeHtml(nominee.clip_url)}</span>`;
+
+  return `
+    <div class="jury-row">
+      ${clipLinkHtml}
+      ${nominee.submitter_name ? `<div class="jury-submitter">von ${escapeHtml(nominee.submitter_name)}</div>` : ""}
+      <div class="jury-actions">
+        <button class="btn-jury ${isMyVote ? "btn-jury-approve" : ""}" data-vote-nominee="${nominee.id}" ${isMyVote ? "disabled" : ""}>
+          ${isMyVote ? "✅ Deine Stimme" : "Für diesen Clip stimmen"}
+        </button>
+      </div>
+    </div>`;
+}
+
+async function castVote(categoryId, nomineeId) {
+  const {
+    data: { user }
+  } = await supabaseClient.auth.getUser();
+
+  const { data: existing } = await supabaseClient
+    .from("votes")
+    .select("id")
+    .eq("category_id", categoryId)
+    .eq("voter_type", currentUserRole)
+    .eq("voter_id", user.id)
+    .maybeSingle();
+
+  let error;
+  if (existing) {
+    ({ error } = await supabaseClient
+      .from("votes")
+      .update({ nominee_id: nomineeId })
+      .eq("id", existing.id));
+  } else {
+    ({ error } = await supabaseClient.from("votes").insert({
+      category_id: categoryId,
+      nominee_id: nomineeId,
+      voter_type: currentUserRole,
+      voter_id: user.id
+    }));
+  }
+
+  if (error) {
+    console.error(error);
+    return;
+  }
+
+  loadVotingNominees();
 }
 
 function setStatus(el, type, message) {

@@ -28,20 +28,22 @@
 <main>
   <section class="hero" style="padding-bottom: 24px;">
     <div class="container">
-      <span class="badge">Einreichungsphase läuft</span>
+      <span class="badge" data-phase-badge>Einreichungsphase läuft</span>
       <h1><span class="accent">Kategorien</span></h1>
-      <p class="lead">Das sind die Kategorien dieser Runde. Reicht passende Clips über die Einreichungsseite ein.</p>
-      <div class="countdown" data-countdown>
-        <div class="unit"><strong data-unit="days">–</strong><span>Tage</span></div>
-        <div class="unit"><strong data-unit="hours">–</strong><span>Std</span></div>
-        <div class="unit"><strong data-unit="minutes">–</strong><span>Min</span></div>
-        <div class="unit"><strong data-unit="seconds">–</strong><span>Sek</span></div>
+      <p class="lead" data-phase-lead>Das sind die Kategorien dieser Runde. Reicht passende Clips über die Einreichungsseite ein.</p>
+      <div data-phase-countdown>
+        <div class="countdown" data-countdown>
+          <div class="unit"><strong data-unit="days">–</strong><span>Tage</span></div>
+          <div class="unit"><strong data-unit="hours">–</strong><span>Std</span></div>
+          <div class="unit"><strong data-unit="minutes">–</strong><span>Min</span></div>
+          <div class="unit"><strong data-unit="seconds">–</strong><span>Sek</span></div>
+        </div>
+        <p class="countdown-note" data-countdown-note>bis die Einreichungsphase endet</p>
       </div>
-      <p class="countdown-note" data-countdown-note>bis die Einreichungsphase endet</p>
     </div>
   </section>
 
-  <section class="section">
+  <section class="section" data-phase-submission>
     <div class="container">
       <div class="demo-note">
         🔒 <strong>Voting ist noch nicht offen.</strong> Aktuell läuft die
@@ -54,6 +56,29 @@
       <div class="category-grid" data-category-overview></div>
       <div style="text-align:center; margin-top: 36px;">
         <a href="teilnehmen.html" class="btn btn-primary">Clip für eine Kategorie einreichen</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" data-phase-voting style="display:none;">
+    <div class="container">
+      <div class="demo-note">
+        🗳️ <strong>So zählt deine Stimme:</strong> Das Ergebnis setzt sich
+        gewichtet zusammen aus Jury (15%), Streamer-Jury (25%) und
+        Community-Voting (60%) – deine Stimme hier ist der Community-Anteil.
+        Eine Stimme pro Kategorie und Gerät, danach ist sie final. Mehr dazu
+        unter <a href="regeln.html">Regeln &amp; FAQ</a>.
+      </div>
+      <div id="community-voting-categories"></div>
+    </div>
+  </section>
+
+  <section class="section" data-phase-closed style="display:none;">
+    <div class="container">
+      <div class="empty-state">
+        <span class="emoji">🏁</span>
+        <p>Das Voting für diese Runde ist beendet. Die Gewinner:innen
+        findet ihr auf der <a href="gewinner.html">Gewinner-Seite</a>.</p>
       </div>
     </div>
   </section>
@@ -97,7 +122,10 @@
   </div>
 </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="assets/js/supabase-config.js"></script>
 <script src="assets/js/data.js"></script>
 <script src="assets/js/main.js"></script>
+<script src="assets/js/vote.js"></script>
 </body>
 </html>

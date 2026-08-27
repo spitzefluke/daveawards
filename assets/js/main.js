@@ -6,8 +6,45 @@ document.addEventListener("DOMContentLoaded", () => {
   renderCategoryTeasers();
   renderCategoryOverview();
   renderWinners();
+  applySitePhase();
   markActiveNavLink();
 });
+
+/* ---------- Phasen-Steuerung (Einreichung / Voting / Geschlossen) ---------- */
+const PHASE_BADGE_TEXT = {
+  submission: "Einreichungsphase läuft",
+  voting: "Voting läuft",
+  closed: "Runde beendet"
+};
+
+const PHASE_LEAD_TEXT = {
+  submission: "Das sind die Kategorien dieser Runde. Reicht passende Clips über die Einreichungsseite ein.",
+  voting: "Stimmt für eure Favorit:innen ab – eure Stimme zählt als Community-Anteil (60%) im Endergebnis.",
+  closed: "Das Voting ist beendet. Die Gewinner:innen findet ihr auf der Gewinner-Seite."
+};
+
+function applySitePhase() {
+  if (typeof SITE_PHASE === "undefined") return;
+  const sections = {
+    submission: document.querySelector("[data-phase-submission]"),
+    voting: document.querySelector("[data-phase-voting]"),
+    closed: document.querySelector("[data-phase-closed]")
+  };
+  if (sections.submission || sections.voting || sections.closed) {
+    Object.entries(sections).forEach(([phase, el]) => {
+      if (el) el.style.display = phase === SITE_PHASE ? "block" : "none";
+    });
+  }
+
+  const badge = document.querySelector("[data-phase-badge]");
+  if (badge && PHASE_BADGE_TEXT[SITE_PHASE]) badge.textContent = PHASE_BADGE_TEXT[SITE_PHASE];
+
+  const lead = document.querySelector("[data-phase-lead]");
+  if (lead && PHASE_LEAD_TEXT[SITE_PHASE]) lead.textContent = PHASE_LEAD_TEXT[SITE_PHASE];
+
+  const countdownWrapper = document.querySelector("[data-phase-countdown]");
+  if (countdownWrapper) countdownWrapper.style.display = SITE_PHASE === "submission" ? "block" : "none";
+}
 
 /* ---------- Navigation (Mobile-Menü) ---------- */
 function initNav() {

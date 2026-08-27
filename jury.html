@@ -59,18 +59,42 @@
 
       <div id="jury-panel" style="display:none;">
         <div class="jury-toolbar">
-          <select id="jury-filter-category"></select>
-          <select id="jury-filter-status">
-            <option value="pending" selected>Offen</option>
-            <option value="passend">Passend</option>
-            <option value="unpassend">Unpassend</option>
-            <option value="falsche_kategorie">Falsche Kategorie</option>
-            <option value="">Alle</option>
-          </select>
-          <button id="jury-refresh" class="btn btn-secondary">Aktualisieren</button>
+          <span class="jury-role-badge">Angemeldet als <strong id="jury-role-label">Jury</strong></span>
           <button id="jury-logout" class="btn btn-secondary" style="margin-left:auto;">Abmelden</button>
         </div>
-        <div id="jury-list"></div>
+
+        <div class="jury-tabs">
+          <button class="jury-tab-btn active" data-tab-target="jury-tab-curation">Einreichungen prüfen</button>
+          <button class="jury-tab-btn" data-tab-target="jury-tab-voting">Gewinner wählen</button>
+        </div>
+
+        <div id="jury-tab-curation" class="jury-tab" style="display:block;">
+          <div class="jury-toolbar">
+            <select id="jury-filter-category"></select>
+            <select id="jury-filter-status">
+              <option value="pending" selected>Offen</option>
+              <option value="passend">Passend</option>
+              <option value="unpassend">Unpassend</option>
+              <option value="falsche_kategorie">Falsche Kategorie</option>
+              <option value="">Alle</option>
+            </select>
+            <button id="jury-refresh" class="btn btn-secondary">Aktualisieren</button>
+          </div>
+          <div id="jury-list"></div>
+        </div>
+
+        <div id="jury-tab-voting" class="jury-tab" style="display:none;">
+          <div class="demo-note">
+            🗳️ Deine Stimme zählt gewichtet in die Endauswertung: Jury 15% ·
+            Streamer-Jury 25% · Community 60%. Du kannst deine Wahl pro
+            Kategorie jederzeit ändern, solange das Voting läuft.
+          </div>
+          <div class="jury-toolbar">
+            <select id="voting-filter-category"></select>
+            <button id="voting-refresh" class="btn btn-secondary">Aktualisieren</button>
+          </div>
+          <div id="voting-list"></div>
+        </div>
       </div>
     </div>
   </section>

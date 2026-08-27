@@ -11,8 +11,12 @@ Der Ablauf einer Runde:
 2. **Jury-Sichtung** – Im passwortgeschützten Jury-Bereich (`jury.html`)
    stuft die Jury jede Einreichung ein: **passend**, **unpassend** oder
    **falsche Kategorie** (mit Vorschlag der richtigen Kategorie).
-3. **Voting** *(folgt in einem späteren Ausbau)* – Nur die als "passend"
-   eingestuften Clips werden zu Nominierten, über die dann abgestimmt wird.
+3. **Voting** – Nur die als "passend" eingestuften Clips werden zu
+   Nominierten. Drei Gruppen stimmen ab und werden gewichtet
+   zusammengerechnet: **Jury 15%**, **Streamer-Jury 25%**, **Community 60%**
+   (Community stimmt auf `kategorien.html`, sobald `SITE_PHASE` auf
+   `"voting"` steht; Jury und Streamer-Jury stimmen im Tab "Gewinner wählen"
+   in `jury.html`).
 4. **Gewinner-Bekanntgabe** – Hall of Fame auf `gewinner.html`.
 
 ## Architektur
@@ -30,6 +34,36 @@ Besucher:innen dieselben Daten sehen (nicht nur lokal im eigenen Browser):
 - Der **Jury-Login** ist ein normaler Supabase-Auth-Account (E-Mail +
   Passwort) – das ist das "Passwort-Gateway". Jede Person mit einem solchen
   Zugang kann im Jury-Bereich alle Einreichungen sehen und bewerten.
+- `jury_roles`-Tabelle unterscheidet **Jury** (kuratiert Einreichungen +
+  stimmt ab, 15%) von **Streamer-Jury** (stimmt nur ab, 25%). Ohne Eintrag
+  gilt ein Konto automatisch als normale Jury.
+- `votes`-Tabelle + `weighted_results`-View berechnen das gewichtete
+  Endergebnis (15/25/60). Die View ist nur für eingeloggte Jury-/
+  Streamer-Jury-Konten sichtbar – die Öffentlichkeit sieht während des
+  Votings keine Zwischenstände.
+
+### Jury- und Streamer-Jury-Konten anlegen
+
+1. Unter **Authentication → Users** in Supabase ein Konto (E-Mail +
+   Passwort) anlegen – das reicht bereits für eine normale **Jury**-Stimme.
+2. Für eine **Streamer-Jury**-Stimme zusätzlich im **SQL Editor** ausführen
+   (User-ID aus der Users-Liste kopieren):
+   ```sql
+   insert into public.jury_roles (user_id, role)
+   values ('<user-id>', 'streamer_jury');
+   ```
+3. Die Zugangsdaten an die jeweilige Person geben – Login läuft für beide
+   Rollen über dieselbe Seite (`jury.html`).
+
+### Gewinner:innen ermitteln
+
+Nach Ende der Voting-Phase im Supabase **SQL Editor**:
+```sql
+select * from public.weighted_results where category_id = 'clip-des-jahres';
+```
+Die Zeile mit dem höchsten `weighted_score_pct` je Kategorie gewinnt. Die
+Gewinner:innen dann wie gehabt manuell in `assets/js/data.js`
+(`PAST_WINNERS`) eintragen, damit sie auf `gewinner.html` erscheinen.
 
 ## Supabase einrichten (einmalig)
 

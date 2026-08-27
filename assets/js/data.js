@@ -14,6 +14,24 @@ const SITE_PHASE = "submission";
 
 const SUBMISSION_DEADLINE = "2026-10-15T23:59:59+02:00";
 
+/*
+ * Gewichtung des finalen Votings. Muss in Summe 1 (100%) ergeben und
+ * exakt zu den Prozentwerten in supabase/schema.sql (weighted_results-
+ * View) sowie den Texten in regeln.html passen – bei Änderung also alle
+ * drei Stellen aktualisieren.
+ */
+const VOTE_WEIGHTS = {
+  jury: 0.15,
+  streamer_jury: 0.25,
+  community: 0.6
+};
+
+const VOTER_TYPE_LABELS = {
+  jury: "Jury",
+  streamer_jury: "Streamer-Jury",
+  community: "Community"
+};
+
 const CATEGORIES = [
   {
     id: "clip-des-jahres",
