@@ -10,8 +10,9 @@
  * Project Settings → API → "Project URL" und "anon public" key.
  */
 
-const SUPABASE_URL = "https://YOUR-PROJECT.supabase.co";
-const SUPABASE_ANON_KEY = "YOUR-ANON-PUBLIC-KEY";
+const SUPABASE_URL = "https://dugksmwdimambkigtreh.supabase.co";
+const SUPABASE_ANON_KEY =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR1Z2tzbXdkaW1hbWJraWd0cmVoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc4NDQ3MDgsImV4cCI6MjEwMzQyMDcwOH0.OSiMZmiUyfuqy95A2N55uLVcZin6i0GaaKdeHt_9eZo";
 
 const supabaseClient =
   typeof supabase !== "undefined" &&
