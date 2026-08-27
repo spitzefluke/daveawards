@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Mitmachen – DaveAwards</title>
-<meta name="description" content="So reicht ihr Nominierungen für die DaveAwards ein." />
+<title>Clip einreichen – DaveAwards</title>
+<meta name="description" content="Reicht einen Clip-Link für die DaveAwards ein und ordnet ihn einer Kategorie zu." />
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚆</text></svg>" />
 <link rel="stylesheet" href="assets/css/style.css" />
 </head>
@@ -16,10 +16,10 @@
     <button class="nav-toggle" aria-label="Menü öffnen" aria-expanded="false">☰</button>
     <ul class="nav-links">
       <li><a href="index.html">Start</a></li>
-      <li><a href="kategorien.html">Kategorien &amp; Voting</a></li>
+      <li><a href="kategorien.html">Kategorien</a></li>
       <li><a href="regeln.html">Regeln &amp; FAQ</a></li>
       <li><a href="gewinner.html">Gewinner</a></li>
-      <li><a href="teilnehmen.html" class="nav-cta">Mitmachen</a></li>
+      <li><a href="teilnehmen.html" class="nav-cta">Clip einreichen</a></li>
     </ul>
   </nav>
 </header>
@@ -28,57 +28,76 @@
 <main>
   <section class="hero" style="padding-bottom: 24px;">
     <div class="container">
-      <span class="badge">Nominierungsphase</span>
-      <h1>Reich deine <span class="accent">Nominierung</span> ein</h1>
-      <p class="lead">Ihr habt einen Clip, ein Meme oder ein Community-Mitglied, das eine Trophäe verdient hat? Her damit!</p>
+      <span class="badge">Einreichungsphase</span>
+      <h1>Reich deinen <span class="accent">Clip</span> ein</h1>
+      <p class="lead">Link einfügen, Kategorie wählen, absenden. Die Jury sichtet danach alle Einreichungen.</p>
     </div>
   </section>
 
   <section class="section">
     <div class="container">
-      <div class="grid-3">
-        <div class="feature-card">
-          <div class="icon">💬</div>
-          <h3>Discord</h3>
-          <p>Reicht Vorschläge im Nominierungs-Channel unseres Discord-Servers ein.</p>
-          <p style="margin-top:14px;"><a class="btn btn-secondary" href="#" data-placeholder-link>Discord beitreten</a></p>
+      <form id="submission-form" class="submission-form" novalidate>
+        <div class="form-field">
+          <label for="submission-category">Kategorie *</label>
+          <select id="submission-category" required>
+            <option value="" disabled selected>Kategorie auswählen…</option>
+          </select>
         </div>
-        <div class="feature-card">
-          <div class="icon">📋</div>
-          <h3>Formular</h3>
-          <p>Alternativ füllt ihr unser kurzes Online-Formular mit Kategorie, Vorschlag und Begründung aus.</p>
-          <p style="margin-top:14px;"><a class="btn btn-secondary" href="#" data-placeholder-link>Zum Formular</a></p>
-        </div>
-        <div class="feature-card">
-          <div class="icon">✉️</div>
-          <h3>E-Mail</h3>
-          <p>Kein Discord? Kein Problem – schickt eure Nominierung einfach per Mail.</p>
-          <p style="margin-top:14px;"><a class="btn btn-secondary" href="mailto:nominierung@daveawards.example">nominierung@daveawards.example</a></p>
-        </div>
-      </div>
 
-      <div class="demo-note" style="margin-top:40px;">
-        ℹ️ <strong>Hinweis für Betreiber:innen:</strong> Discord-Link, Formular-Link und
-        E-Mail-Adresse sind Platzhalter (<code>data-placeholder-link</code> /
-        <code>nominierung@daveawards.example</code>) und müssen vor dem Launch durch
-        echte Kontaktwege ersetzt werden.
-      </div>
+        <div class="form-field">
+          <label for="submission-url">Link zum Clip *</label>
+          <input id="submission-url" type="url" placeholder="https://…" required />
+        </div>
+
+        <div class="form-field">
+          <label for="submission-name">Dein Name / Twitch-Name (optional)</label>
+          <input id="submission-name" type="text" maxlength="80" placeholder="z. B. dein Twitch-Username" />
+        </div>
+
+        <div class="form-field">
+          <label for="submission-note">Kurze Begründung (optional)</label>
+          <textarea id="submission-note" maxlength="500" rows="3" placeholder="Warum verdient dieser Clip eine Nominierung?"></textarea>
+        </div>
+
+        <p id="submission-status" class="form-status" aria-live="polite"></p>
+
+        <button type="submit" class="btn btn-primary">Clip einreichen</button>
+      </form>
     </div>
   </section>
 
   <section class="section section-alt">
     <div class="container">
       <div class="section-head">
-        <span class="eyebrow">Was wir brauchen</span>
-        <h2>Eine gute Nominierung enthält…</h2>
+        <span class="eyebrow">Sonstiger Kontakt</span>
+        <h2>Fragen oder kein passender Link zur Hand?</h2>
       </div>
-      <div class="prose" style="max-width: 700px; margin: 0 auto;">
-        <ul>
-          <li>Die passende Kategorie (siehe <a href="kategorien.html">Kategorien-Übersicht</a>)</li>
-          <li>Einen Link zum Clip/Beitrag oder den Namen der nominierten Person</li>
-          <li>Eine kurze Begründung, warum diese Nominierung eine Trophäe verdient</li>
-          <li>Euren Namen/Usernamen zur Nachverfolgung durch das Orga-Team</li>
-        </ul>
+      <div class="grid-3">
+        <div class="feature-card">
+          <div class="icon">💬</div>
+          <h3>Discord</h3>
+          <p>Fragen zur Einreichung könnt ihr im Discord-Server stellen.</p>
+          <p style="margin-top:14px;"><a class="btn btn-secondary" href="#" data-placeholder-link>Discord beitreten</a></p>
+        </div>
+        <div class="feature-card">
+          <div class="icon">✉️</div>
+          <h3>E-Mail</h3>
+          <p>Alternativ erreicht ihr uns auch per Mail.</p>
+          <p style="margin-top:14px;"><a class="btn btn-secondary" href="mailto:einreichung@daveawards.example">einreichung@daveawards.example</a></p>
+        </div>
+        <div class="feature-card">
+          <div class="icon">📋</div>
+          <h3>Kategorien-Übersicht</h3>
+          <p>Nicht sicher, in welche Kategorie euer Clip passt?</p>
+          <p style="margin-top:14px;"><a class="btn btn-secondary" href="kategorien.html">Kategorien ansehen</a></p>
+        </div>
+      </div>
+
+      <div class="demo-note" style="margin-top:40px;">
+        ℹ️ <strong>Hinweis für Betreiber:innen:</strong> Discord-Link und
+        E-Mail-Adresse sind Platzhalter (<code>data-placeholder-link</code> /
+        <code>einreichung@daveawards.example</code>) und müssen vor dem Launch
+        durch echte Kontaktwege ersetzt werden.
       </div>
     </div>
   </section>
@@ -94,10 +113,11 @@
       <div>
         <h4>Seiten</h4>
         <ul>
-          <li><a href="kategorien.html">Kategorien &amp; Voting</a></li>
+          <li><a href="kategorien.html">Kategorien</a></li>
           <li><a href="regeln.html">Regeln &amp; FAQ</a></li>
           <li><a href="gewinner.html">Gewinner</a></li>
-          <li><a href="teilnehmen.html">Mitmachen</a></li>
+          <li><a href="teilnehmen.html">Clip einreichen</a></li>
+          <li><a href="jury.html">Jury-Login</a></li>
         </ul>
       </div>
       <div>
@@ -121,7 +141,10 @@
   </div>
 </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="assets/js/supabase-config.js"></script>
 <script src="assets/js/data.js"></script>
 <script src="assets/js/main.js"></script>
+<script src="assets/js/submit.js"></script>
 </body>
 </html>

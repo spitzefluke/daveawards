@@ -1,10 +1,10 @@
-/* DaveAwards – gemeinsame Logik: Navigation, Countdown, Voting, Rendering */
+/* DaveAwards – gemeinsame Logik: Navigation, Countdown, Kategorie-Übersicht */
 
 document.addEventListener("DOMContentLoaded", () => {
   initNav();
   initCountdown();
   renderCategoryTeasers();
-  renderVotingCategories();
+  renderCategoryOverview();
   renderWinners();
   markActiveNavLink();
 });
@@ -29,12 +29,12 @@ function markActiveNavLink() {
   });
 }
 
-/* ---------- Countdown bis zum Voting-Ende ---------- */
+/* ---------- Countdown bis zum Ende der Einreichungsphase ---------- */
 function initCountdown() {
   const el = document.querySelector("[data-countdown]");
-  if (!el || typeof VOTING_DEADLINE === "undefined") return;
+  if (!el || typeof SUBMISSION_DEADLINE === "undefined") return;
 
-  const deadline = new Date(VOTING_DEADLINE).getTime();
+  const deadline = new Date(SUBMISSION_DEADLINE).getTime();
   const unitDays = el.querySelector("[data-unit='days']");
   const unitHours = el.querySelector("[data-unit='hours']");
   const unitMinutes = el.querySelector("[data-unit='minutes']");
@@ -48,7 +48,7 @@ function initCountdown() {
       if (unitHours) unitHours.textContent = "0";
       if (unitMinutes) unitMinutes.textContent = "0";
       if (unitSeconds) unitSeconds.textContent = "0";
-      if (noteEl) noteEl.textContent = "Das Voting ist beendet – danke fürs Mitmachen!";
+      if (noteEl) noteEl.textContent = "Die Einreichungsphase ist beendet.";
       clearInterval(timer);
       return;
     }
@@ -79,121 +79,24 @@ function renderCategoryTeasers() {
         <span class="icon">${cat.icon}</span>
         <h3>${cat.name}</h3>
         <p>${cat.description}</p>
-        <span class="count">${cat.nominees.length} Nominierte</span>
       </a>`
     )
     .join("");
 }
 
-/* ---------- Voting-Logik (lokal im Browser, siehe Regeln-Seite) ---------- */
-const VOTE_STORAGE_KEY = "daveawards_votes_v1";
+/* ---------- Kategorien-Seite: reine Übersicht (kein Voting während der Einreichungsphase) ---------- */
+function renderCategoryOverview() {
+  const grid = document.querySelector("[data-category-overview]");
+  if (!grid || typeof CATEGORIES === "undefined") return;
 
-function getStoredVotes() {
-  try {
-    return JSON.parse(localStorage.getItem(VOTE_STORAGE_KEY)) || {};
-  } catch (e) {
-    return {};
-  }
-}
-
-function saveVote(categoryId, nomineeId) {
-  const votes = getStoredVotes();
-  votes[categoryId] = nomineeId;
-  localStorage.setItem(VOTE_STORAGE_KEY, JSON.stringify(votes));
-}
-
-function renderVotingCategories() {
-  const container = document.querySelector("[data-voting-categories]");
-  if (!container || typeof CATEGORIES === "undefined") return;
-
-  const votes = getStoredVotes();
-
-  container.innerHTML = CATEGORIES.map((cat) => renderCategoryBlock(cat, votes[cat.id])).join("");
-
-  container.querySelectorAll(".vote-btn").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const categoryId = btn.dataset.category;
-      const nomineeId = btn.dataset.nominee;
-      if (getStoredVotes()[categoryId]) return; // bereits abgestimmt
-      saveVote(categoryId, nomineeId);
-      const cat = CATEGORIES.find((c) => c.id === categoryId);
-      const block = document.getElementById(`cat-${categoryId}`);
-      if (block && cat) {
-        block.outerHTML = renderCategoryBlock(cat, nomineeId);
-        attachHandlersFor(categoryId);
-      }
-    });
-  });
-}
-
-function attachHandlersFor(categoryId) {
-  const block = document.getElementById(`cat-${categoryId}`);
-  if (!block) return;
-  block.querySelectorAll(".vote-btn").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const catId = btn.dataset.category;
-      const nomineeId = btn.dataset.nominee;
-      if (getStoredVotes()[catId]) return;
-      saveVote(catId, nomineeId);
-      const cat = CATEGORIES.find((c) => c.id === catId);
-      const freshBlock = document.getElementById(`cat-${catId}`);
-      if (freshBlock && cat) {
-        freshBlock.outerHTML = renderCategoryBlock(cat, nomineeId);
-        attachHandlersFor(catId);
-      }
-    });
-  });
-}
-
-function renderCategoryBlock(cat, userVoteNomineeId) {
-  const totalVotes =
-    cat.nominees.reduce((sum, n) => sum + n.seedVotes, 0) + (userVoteNomineeId ? 1 : 0);
-
-  const nomineesHtml = cat.nominees
-    .map((n) => {
-      const isUserVote = n.id === userVoteNomineeId;
-      const votes = n.seedVotes + (isUserVote ? 1 : 0);
-      const pct = totalVotes > 0 ? Math.round((votes / totalVotes) * 100) : 0;
-      const initials = n.name
-        .replace(/^Beispiel_?/, "")
-        .split(/[_\s]/)
-        .filter(Boolean)
-        .slice(0, 2)
-        .map((p) => p[0])
-        .join("")
-        .toUpperCase() || "?";
-
-      const buttonHtml = userVoteNomineeId
-        ? isUserVote
-          ? `<button class="vote-btn" disabled>✓ Deine Stimme</button>`
-          : `<button class="vote-btn" disabled>Voting genutzt</button>`
-        : `<button class="vote-btn" data-category="${cat.id}" data-nominee="${n.id}">Abstimmen</button>`;
-
-      return `
-        <div class="nominee">
-          <div class="avatar">${initials}</div>
-          <div class="info">
-            <div class="name">${n.name}</div>
-            <div class="tagline">${n.tagline}</div>
-          </div>
-          ${buttonHtml}
-          <div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div>
-          <div class="pct">${pct}% · ${votes} Stimmen</div>
-        </div>`;
-    })
-    .join("");
-
-  return `
-    <div class="vote-category" id="cat-${cat.id}">
-      <div class="vote-category-head">
+  grid.innerHTML = CATEGORIES.map(
+    (cat) => `
+      <div class="category-card" id="${cat.id}">
         <span class="icon">${cat.icon}</span>
-        <div>
-          <h3>${cat.name}</h3>
-          <p>${cat.description}</p>
-        </div>
-      </div>
-      <div class="nominee-list">${nomineesHtml}</div>
-    </div>`;
+        <h3>${cat.name}</h3>
+        <p>${cat.description}</p>
+      </div>`
+  ).join("");
 }
 
 /* ---------- Gewinner-Seite ---------- */

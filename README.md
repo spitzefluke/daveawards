@@ -3,51 +3,72 @@
 Ein inoffizielles Fanprojekt im Stil von [streamawards.de](https://streamawards.de/) –
 für die Community von **Zugfahrer_DaveTV**.
 
-DaveAwards ist eine statische Website (reines HTML/CSS/JS, kein Build-Schritt
-nötig) mit:
+Der Ablauf einer Runde:
 
-- **Startseite** mit Hero, Ablauf-Erklärung und Kategorie-Teasern
-- **Countdown** bis zum Ende der Votingphase
-- **Kategorien & Voting** – Nominierten-Karten mit Stimmen-Balken; Voting läuft
-  clientseitig über `localStorage` (eine Stimme pro Kategorie und Gerät)
-- **Regeln & FAQ** – Ablauf, Fair-Play-Regeln, häufige Fragen
-- **Gewinner-Seite** (Hall of Fame), aktuell leer bis zur ersten Ausgabe
-- **Mitmachen**-Seite zum Einreichen von Nominierungen (Discord/Formular/Mail)
-- **Impressum & Datenschutz** als rechtliche Pflichtseiten (DE)
+1. **Einreichungsphase** – Zuschauer:innen reichen Clip-Links ein und ordnen
+   sie direkt einer Kategorie zu. In dieser Phase gibt es **keine öffentliche
+   Nominierten-Liste und kein Voting** zu sehen.
+2. **Jury-Sichtung** – Im passwortgeschützten Jury-Bereich (`jury.html`)
+   stuft die Jury jede Einreichung ein: **passend**, **unpassend** oder
+   **falsche Kategorie** (mit Vorschlag der richtigen Kategorie).
+3. **Voting** *(folgt in einem späteren Ausbau)* – Nur die als "passend"
+   eingestuften Clips werden zu Nominierten, über die dann abgestimmt wird.
+4. **Gewinner-Bekanntgabe** – Hall of Fame auf `gewinner.html`.
+
+## Architektur
+
+Reines HTML/CSS/JS (kein Build-Schritt) für Frontend + Hosting via GitHub
+Pages, plus **Supabase** als Backend für die Einreichungen, damit alle
+Besucher:innen dieselben Daten sehen (nicht nur lokal im eigenen Browser):
+
+- `submissions`-Tabelle (siehe `supabase/schema.sql`) speichert jede
+  Einreichung (Kategorie, Clip-Link, optionaler Name/Begründung, Status).
+- **Row-Level-Security** sorgt dafür, dass normale Besucher:innen nur neue
+  Einreichungen anlegen, aber **nichts einsehen** können (technische
+  Umsetzung von "kein Zugriff auf die Kategorien/Einreichungen während der
+  Einreichungsphase").
+- Der **Jury-Login** ist ein normaler Supabase-Auth-Account (E-Mail +
+  Passwort) – das ist das "Passwort-Gateway". Jede Person mit einem solchen
+  Zugang kann im Jury-Bereich alle Einreichungen sehen und bewerten.
+
+## Supabase einrichten (einmalig)
+
+1. Kostenloses Konto auf [supabase.com](https://supabase.com) anlegen und
+   ein neues Projekt erstellen.
+2. Im Projekt unter **SQL Editor** den Inhalt von `supabase/schema.sql`
+   einfügen und ausführen (legt Tabelle + Sicherheitsregeln an).
+3. Unter **Project Settings → API** die Werte **"Project URL"** und
+   **"anon public" key** kopieren und in `assets/js/supabase-config.js`
+   eintragen (`SUPABASE_URL`, `SUPABASE_ANON_KEY`). Diese Keys sind bewusst
+   öffentlich/clientseitig nutzbar – der Schutz läuft über die
+   Row-Level-Security-Regeln, nicht über Geheimhaltung des Keys.
+4. Unter **Authentication → Users** ein oder mehrere Jury-Konten anlegen
+   (E-Mail + Passwort) und diese Zugangsdaten an die Jury-Mitglieder geben.
+5. Änderungen committen &amp; pushen – GitHub Pages deployt automatisch neu.
+
+Ohne Schritt 1–3 zeigen Einreichungsformular und Jury-Login einen Hinweis,
+dass das Backend noch nicht konfiguriert ist, statt mit einem Fehler
+abzustürzen.
 
 ## Lokal starten
-
-Kein Build nötig – einfach einen statischen Server im Projektordner starten:
 
 ```bash
 python3 -m http.server 8000
 # dann im Browser: http://localhost:8000
 ```
 
-(Direktes Öffnen der `index.html` per Doppelklick funktioniert ebenfalls,
-sollte aber wegen `fetch`/Modul-Restriktionen in modernen Browsern nach
-Möglichkeit über einen lokalen Server erfolgen.)
-
 ## Vor dem echten Launch anpassen
-
-Diese Seite ist bewusst mit **Platzhaltern** ausgeliefert, die vor der
-Veröffentlichung ersetzt werden sollten:
 
 | Was | Wo |
 |---|---|
-| Kategorien & Nominierte | `assets/js/data.js` (`CATEGORIES`) – aktuell nur Beispielnamen |
-| Voting-Enddatum | `assets/js/data.js` (`VOTING_DEADLINE`) |
+| Supabase-Zugangsdaten | `assets/js/supabase-config.js` |
+| Kategorien | `assets/js/data.js` (`CATEGORIES`) |
+| Phase der Seite (Einreichung/Voting/geschlossen) | `assets/js/data.js` (`SITE_PHASE`) |
+| Deadline der Einreichungsphase | `assets/js/data.js` (`SUBMISSION_DEADLINE`) |
 | Vergangene Gewinner | `assets/js/data.js` (`PAST_WINNERS`) |
-| Discord-/Formular-Link, E-Mail | `teilnehmen.html` |
+| Discord-Link, E-Mail | `teilnehmen.html` |
 | Betreiber-Angaben (§5 TMG) | `impressum.html` |
-| Datenschutz-Details (Hoster etc.) | `datenschutz.html` |
-
-## Hinweis zum Voting
-
-Das Voting in dieser Version ist eine **clientseitige Demo** (`localStorage`).
-Für ein produktives, geräteübergreifendes und manipulationssicheres Voting
-wird zusätzlich ein kleines Backend bzw. ein externer Formular-/Voting-Dienst
-benötigt.
+| Datenschutz-Details (Hoster, Supabase-Verweis) | `datenschutz.html` |
 
 ## Rechtlicher Hinweis
 

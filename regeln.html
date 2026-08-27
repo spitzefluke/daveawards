@@ -16,10 +16,10 @@
     <button class="nav-toggle" aria-label="Menü öffnen" aria-expanded="false">☰</button>
     <ul class="nav-links">
       <li><a href="index.html">Start</a></li>
-      <li><a href="kategorien.html">Kategorien &amp; Voting</a></li>
+      <li><a href="kategorien.html">Kategorien</a></li>
       <li><a href="regeln.html">Regeln &amp; FAQ</a></li>
       <li><a href="gewinner.html">Gewinner</a></li>
-      <li><a href="teilnehmen.html" class="nav-cta">Mitmachen</a></li>
+      <li><a href="teilnehmen.html" class="nav-cta">Clip einreichen</a></li>
     </ul>
   </nav>
 </header>
@@ -42,16 +42,16 @@
       </div>
       <ul class="timeline" style="max-width: 720px; margin: 0 auto;">
         <li>
-          <h4>1. Nominierungsphase</h4>
-          <p>Die Community reicht über das <a href="teilnehmen.html">Einreichungsformular</a> Vorschläge für alle Kategorien ein.</p>
+          <h4>1. Einreichungsphase</h4>
+          <p>Die Community reicht über das <a href="teilnehmen.html">Einreichungsformular</a> Clip-Links ein und ordnet sie direkt einer Kategorie zu. Während dieser Phase gibt es noch <strong>keine öffentliche Nominierten-Liste und kein Voting</strong> zu sehen.</p>
         </li>
         <li>
-          <h4>2. Sichtung</h4>
-          <p>Das Team sichtet die Einreichungen, entfernt Duplikate/unangemessene Vorschläge und erstellt die finale Nominierten-Liste.</p>
+          <h4>2. Jury-Sichtung</h4>
+          <p>Die Jury loggt sich im passwortgeschützten <a href="jury.html">Jury-Bereich</a> ein und stuft jede Einreichung ein: <strong>passend</strong>, <strong>unpassend</strong> oder <strong>falsche Kategorie</strong> (inkl. Vorschlag der richtigen Kategorie).</p>
         </li>
         <li>
           <h4>3. Votingphase</h4>
-          <p>Auf der <a href="kategorien.html">Kategorien-Seite</a> kann jede:r einmal pro Kategorie abstimmen, bis der Countdown abläuft.</p>
+          <p>Nur die von der Jury als "passend" eingestuften Clips gehen als Nominierte ins Voting. Diese Funktion folgt in einem späteren Ausbau der Seite.</p>
         </li>
         <li>
           <h4>4. Auswertung &amp; Show</h4>
@@ -73,10 +73,10 @@
       </div>
       <div class="prose" style="max-width: 720px; margin: 0 auto;">
         <ul>
-          <li>Pro Person und Kategorie zählt nur eine Stimme.</li>
-          <li>Stimmenkauf, Multi-Accounting oder automatisiertes Voting (Bots) führt zum Ausschluss aus der Wertung.</li>
-          <li>Nominierungen sollen respektvoll sein – keine beleidigenden, diskriminierenden oder anzüglichen Vorschläge.</li>
-          <li>Das Orga-Team behält sich vor, Kategorien, Nominierte oder Fristen bei Bedarf anzupassen und dies transparent zu kommunizieren.</li>
+          <li>Pro Einreichung gibt es einen Clip-Link und eine Kategorie – reicht ihr denselben Clip mehrfach ein, kann die Jury Duplikate als "unpassend" aussortieren.</li>
+          <li>Die Jury bewertet ausschließlich nach Passung zur Kategorie, nicht nach persönlichem Geschmack.</li>
+          <li>Eingereichte Clips/Notizen sollen respektvoll sein – keine beleidigenden, diskriminierenden oder anzüglichen Inhalte.</li>
+          <li>Das Orga-Team behält sich vor, Kategorien oder Fristen bei Bedarf anzupassen und dies transparent zu kommunizieren.</li>
           <li>Die Teilnahme ist freiwillig und kostenlos.</li>
         </ul>
       </div>
@@ -95,16 +95,20 @@
           <p>Nein. DaveAwards ist ein <strong>inoffizielles Fanprojekt</strong>, das von Zuschauer:innen für die Community organisiert wird.</p>
         </details>
         <details class="faq-item">
-          <summary>Wie funktioniert das Voting technisch?</summary>
-          <p>In dieser Version läuft das Voting als Demo direkt im Browser (localStorage) – jede Stimme zählt nur auf dem jeweiligen Gerät. Für ein produktives, geräteübergreifendes Voting mit Betrugsschutz braucht es zusätzlich ein kleines Backend bzw. einen Voting-Dienst.</p>
+          <summary>Warum sehe ich auf der Kategorien-Seite keine Nominierten oder Voting?</summary>
+          <p>Weil gerade die Einreichungsphase läuft. Erst nachdem die Jury alle Clips gesichtet hat, werden die als "passend" eingestuften Clips öffentlich als Nominierte sichtbar – Voting folgt danach.</p>
         </details>
         <details class="faq-item">
-          <summary>Kann ich meine Stimme nachträglich ändern?</summary>
-          <p>Nein, pro Kategorie ist nur eine finale Abstimmung vorgesehen, um das Ergebnis fair zu halten.</p>
+          <summary>Wer ist die Jury und wie wird bewertet?</summary>
+          <p>Die Jury sind vom Orga-Team bestimmte Personen mit eigenem Login für den passwortgeschützten <a href="jury.html">Jury-Bereich</a>. Dort stuft sie jede Einreichung als "passend", "unpassend" oder "falsche Kategorie" ein.</p>
         </details>
         <details class="faq-item">
-          <summary>Wie reiche ich eine Nominierung ein?</summary>
-          <p>Über die Seite <a href="teilnehmen.html">Mitmachen</a> – dort findet ihr den Link zum Einreichungsformular bzw. Discord.</p>
+          <summary>Meine Einreichung wurde als "falsche Kategorie" markiert – was jetzt?</summary>
+          <p>Die Jury schlägt dabei meist eine passendere Kategorie vor. Der Clip bleibt erhalten, wird aber nicht automatisch verschoben – bei Rückfragen könnt ihr uns über die <a href="teilnehmen.html">Kontaktwege</a> erreichen.</p>
+        </details>
+        <details class="faq-item">
+          <summary>Wie reiche ich einen Clip ein?</summary>
+          <p>Über die Seite <a href="teilnehmen.html">Clip einreichen</a> – dort gebt ihr Link und Kategorie direkt ins Formular ein.</p>
         </details>
         <details class="faq-item">
           <summary>Wo werden die Gewinner:innen bekannt gegeben?</summary>
@@ -125,10 +129,11 @@
       <div>
         <h4>Seiten</h4>
         <ul>
-          <li><a href="kategorien.html">Kategorien &amp; Voting</a></li>
+          <li><a href="kategorien.html">Kategorien</a></li>
           <li><a href="regeln.html">Regeln &amp; FAQ</a></li>
           <li><a href="gewinner.html">Gewinner</a></li>
-          <li><a href="teilnehmen.html">Mitmachen</a></li>
+          <li><a href="teilnehmen.html">Clip einreichen</a></li>
+          <li><a href="jury.html">Jury-Login</a></li>
         </ul>
       </div>
       <div>
