@@ -208,10 +208,10 @@ function renderSubmissionRow(row) {
         <button class="btn-jury btn-jury-reject" data-action="unpassend">❌ Unpassend</button>
         <div class="jury-wrong-category">
           <select class="jury-suggest-category">
-            <option value="">Richtige Kategorie…</option>
+            <option value="">Falsche Kategorie – wohin verschieben?</option>
             ${categoryOptions}
           </select>
-          <button class="btn-jury btn-jury-wrong" data-action="falsche_kategorie">↔️ Falsche Kategorie</button>
+          <button class="btn-jury btn-jury-wrong" data-action="falsche_kategorie">↔️ Verschieben</button>
         </div>
       </div>
     </div>`;
@@ -223,27 +223,50 @@ function wireRowActions() {
     rowEl.querySelectorAll("button[data-action]").forEach((btn) => {
       btn.addEventListener("click", async () => {
         const action = btn.dataset.action;
-        let suggestedCategoryId = null;
-
-        if (action === "falsche_kategorie") {
-          const select = rowEl.querySelector(".jury-suggest-category");
-          suggestedCategoryId = select.value || null;
-        }
 
         rowEl.querySelectorAll("button").forEach((b) => (b.disabled = true));
 
         const {
           data: { user }
         } = await supabaseClient.auth.getUser();
+        const reviewedBy = user ? user.email : null;
+        const reviewedAt = new Date().toISOString();
+
+        let updatePayload;
+
+        if (action === "falsche_kategorie") {
+          const select = rowEl.querySelector(".jury-suggest-category");
+          const newCategoryId = select.value || null;
+
+          updatePayload = newCategoryId
+            ? // Clip direkt in die richtige Kategorie verschieben und dort
+              // wieder als "offen" zur Prüfung einreihen.
+              {
+                category_id: newCategoryId,
+                status: "pending",
+                suggested_category_id: null,
+                reviewed_at: reviewedAt,
+                reviewed_by: reviewedBy
+              }
+            : // Keine Zielkategorie gewählt: nur als falsche Kategorie markieren.
+              {
+                status: "falsche_kategorie",
+                suggested_category_id: null,
+                reviewed_at: reviewedAt,
+                reviewed_by: reviewedBy
+              };
+        } else {
+          updatePayload = {
+            status: action,
+            suggested_category_id: null,
+            reviewed_at: reviewedAt,
+            reviewed_by: reviewedBy
+          };
+        }
 
         const { error } = await supabaseClient
           .from("submissions")
-          .update({
-            status: action,
-            suggested_category_id: suggestedCategoryId,
-            reviewed_at: new Date().toISOString(),
-            reviewed_by: user ? user.email : null
-          })
+          .update(updatePayload)
           .eq("id", id);
 
         if (error) {
