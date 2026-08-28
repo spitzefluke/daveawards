@@ -46,6 +46,18 @@ const CATEGORIES = [
     description: "Die legendärste Rage-Reaktion des Jahres."
   },
   {
+    id: "bester-versprecher",
+    icon: "😅",
+    name: "Bester Versprecher",
+    description: "Der Versprecher, über den heute noch gelacht wird."
+  },
+  {
+    id: "bester-fail",
+    icon: "🤦",
+    name: "Bester Fail",
+    description: "Der peinlichste, unfreiwillig lustigste Fail des Jahres."
+  },
+  {
     id: "bestes-duo",
     icon: "👯",
     name: "Bestes Duo",
@@ -56,6 +68,12 @@ const CATEGORIES = [
     icon: "😂",
     name: "Lustigster Moment",
     description: "Bei diesem Clip hat der ganze Chat Tränen gelacht."
+  },
+  {
+    id: "suessester-moment",
+    icon: "🥰",
+    name: "Süßester Moment",
+    description: "Der Moment, der der Community ein 🥰 entlockt hat."
   },
   {
     id: "clip-des-jahres",
@@ -82,10 +100,22 @@ const CATEGORIES = [
     description: "Das Mitglied, das die Community das ganze Jahr über bereichert hat. Bitte im Formular den Namen nennen."
   },
   {
+    id: "bestes-artwork",
+    icon: "🎨",
+    name: "Bestes Artwork",
+    description: "Das kreativste Fan-Artwork rund um den Kanal."
+  },
+  {
     id: "beste-song-performance",
     icon: "🎤",
     name: "Beste Song-Performance",
     description: "Der beste musikalische Moment im Stream."
+  },
+  {
+    id: "bester-gaming-moment",
+    icon: "🎮",
+    name: "Bester Gaming-Moment",
+    description: "Der stärkste In-Game-Moment des Jahres – Clutch, Play oder einfach nur episch."
   },
   {
     id: "bester-win",
