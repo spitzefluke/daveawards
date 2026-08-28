@@ -34,10 +34,22 @@ const VOTER_TYPE_LABELS = {
 
 const CATEGORIES = [
   {
-    id: "clip-des-jahres",
-    icon: "🎬",
-    name: "Clip des Jahres",
-    description: "Der Stream-Moment, der am meisten im Gedächtnis geblieben ist."
+    id: "wtf-was-passiert-hier",
+    icon: "🤯",
+    name: "WTF – was passiert hier",
+    description: "Der Moment, bei dem im Chat nur noch Fragezeichen standen."
+  },
+  {
+    id: "bester-rage",
+    icon: "😡",
+    name: "Bester Rage",
+    description: "Die legendärste Rage-Reaktion des Jahres."
+  },
+  {
+    id: "bestes-duo",
+    icon: "👯",
+    name: "Bestes Duo",
+    description: "Zwei Personen, die als Team einfach unschlagbar sind. Bitte im Formular beide Namen nennen."
   },
   {
     id: "lustigster-moment",
@@ -46,42 +58,53 @@ const CATEGORIES = [
     description: "Bei diesem Clip hat der ganze Chat Tränen gelacht."
   },
   {
+    id: "clip-des-jahres",
+    icon: "🎬",
+    name: "Clip des Jahres",
+    description: "Der Stream-Moment, der am meisten im Gedächtnis geblieben ist."
+  },
+  {
+    id: "bester-offstream-moment",
+    icon: "📸",
+    name: "Bester Offstream-Moment",
+    description: "Das Highlight abseits des eigentlichen Streams – z. B. von Treffen, Reisen oder Community-Events."
+  },
+  {
+    id: "bestes-event",
+    icon: "🎉",
+    name: "Bestes Event",
+    description: "Das beste Community- oder Stream-Event des Jahres. Bitte im Formular den Namen des Events nennen."
+  },
+  {
     id: "community-mvp",
     icon: "🏆",
     name: "Community-MVP",
-    description: "Das Mitglied, das die Community das ganze Jahr über bereichert hat."
+    description: "Das Mitglied, das die Community das ganze Jahr über bereichert hat. Bitte im Formular den Namen nennen."
   },
   {
-    id: "bestes-fanart",
-    icon: "🎨",
-    name: "Bestes Fanart",
-    description: "Die kreativste Fan-Kunst rund um den Kanal."
+    id: "beste-song-performance",
+    icon: "🎤",
+    name: "Beste Song-Performance",
+    description: "Der beste musikalische Moment im Stream."
   },
   {
-    id: "bestes-meme",
-    icon: "🖼️",
-    name: "Bestes Meme",
-    description: "Das Meme, das in keinem Chat-Rückblick fehlen darf."
-  },
-  {
-    id: "newcomer-des-jahres",
-    icon: "🌟",
-    name: "Newcomer des Jahres",
-    description: "Neu in der Community und trotzdem schon nicht mehr wegzudenken."
-  },
-  {
-    id: "bester-mod",
-    icon: "🛡️",
-    name: "Bester Mod / Helfer im Chat",
-    description: "Hält den Chat am Laufen und immer ein offenes Ohr für Neue."
-  },
-  {
-    id: "treuester-mitfahrer",
-    icon: "🚆",
-    name: "Treuester Mitfahrer",
-    description: "Community-Choice-Award für Treue und Herzblut – der Publikumsliebling."
+    id: "bester-win",
+    icon: "🥇",
+    name: "Bester Win",
+    description: "Der geilste, unwahrscheinlichste oder verdienteste Sieg des Jahres."
   }
 ];
+
+/*
+ * Für diese Kategorien zählt vor allem WER/WAS nominiert wird (zwei
+ * Personen, ein Event, ein Community-Mitglied), nicht nur der Clip-Link.
+ * Steuert den Platzhalter-Text im Begründungsfeld auf teilnehmen.html.
+ */
+const CATEGORY_NOTE_HINTS = {
+  "bestes-duo": "Namen der beiden Personen + kurze Begründung",
+  "bestes-event": "Name des Events + kurze Begründung",
+  "community-mvp": "Name des Community-Mitglieds + kurze Begründung"
+};
 
 /*
  * Gewinner vergangener Ausgaben. Leer, bis die erste Ausgabe von

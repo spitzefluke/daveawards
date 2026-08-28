@@ -1,8 +1,11 @@
 /* DaveAwards – Einreichungsformular (schreibt in Supabase "submissions") */
 
+const DEFAULT_NOTE_PLACEHOLDER = "Warum verdient dieser Clip eine Nominierung?";
+
 document.addEventListener("DOMContentLoaded", () => {
   populateCategorySelect();
   wireSubmissionForm();
+  wireNoteHint();
 });
 
 function populateCategorySelect() {
@@ -12,6 +15,16 @@ function populateCategorySelect() {
   select.innerHTML =
     `<option value="" disabled selected>Kategorie auswählen…</option>` +
     CATEGORIES.map((cat) => `<option value="${cat.id}">${cat.icon} ${cat.name}</option>`).join("");
+}
+
+function wireNoteHint() {
+  const select = document.querySelector("#submission-category");
+  const note = document.querySelector("#submission-note");
+  if (!select || !note || typeof CATEGORY_NOTE_HINTS === "undefined") return;
+
+  select.addEventListener("change", () => {
+    note.placeholder = CATEGORY_NOTE_HINTS[select.value] || DEFAULT_NOTE_PLACEHOLDER;
+  });
 }
 
 function wireSubmissionForm() {
