@@ -334,6 +334,10 @@ async function loadVotingNominees() {
 
   list.innerHTML = nominees.map((n) => renderNomineeVoteRow(n, myVoteNomineeId)).join("");
 
+  list.querySelectorAll(".clip-play-btn[data-clip-url]").forEach((btn) => {
+    btn.addEventListener("click", () => openClipModal(btn.dataset.clipUrl));
+  });
+
   list.querySelectorAll("button[data-vote-nominee]").forEach((btn) => {
     btn.addEventListener("click", () => castVote(categoryId, btn.dataset.voteNominee));
   });
@@ -343,7 +347,7 @@ function renderNomineeVoteRow(nominee, myVoteNomineeId) {
   const isMyVote = nominee.id === myVoteNomineeId;
   const isSafeUrl = /^https?:\/\//i.test(nominee.clip_url || "");
   const clipLinkHtml = isSafeUrl
-    ? `<a class="jury-link" href="${escapeAttr(nominee.clip_url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(nominee.clip_url)}</a>`
+    ? `<button type="button" class="clip-play-btn" data-clip-url="${escapeAttr(nominee.clip_url)}">▶ Clip ansehen</button>`
     : `<span class="jury-link jury-link-unsafe">${escapeHtml(nominee.clip_url)}</span>`;
 
   return `

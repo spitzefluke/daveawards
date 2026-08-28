@@ -77,7 +77,7 @@ function renderCategoryVoteBlock(cat, nominees, votedNomineeId) {
       const isVoted = n.id === votedNomineeId;
       const isSafeUrl = /^https?:\/\//i.test(n.clip_url || "");
       const clipLinkHtml = isSafeUrl
-        ? `<a class="jury-link" href="${escapeAttrVote(n.clip_url)}" target="_blank" rel="noopener noreferrer">${escapeHtmlVote(n.clip_url)}</a>`
+        ? `<button type="button" class="clip-play-btn" data-clip-url="${escapeAttrVote(n.clip_url)}">▶ Clip ansehen</button>`
         : `<span class="jury-link">${escapeHtmlVote(n.clip_url)}</span>`;
 
       const buttonHtml = votedNomineeId
@@ -111,6 +111,10 @@ function renderCategoryVoteBlock(cat, nominees, votedNomineeId) {
 }
 
 function wireCommunityVoteButtons() {
+  document.querySelectorAll(".clip-play-btn[data-clip-url]").forEach((btn) => {
+    btn.addEventListener("click", () => openClipModal(btn.dataset.clipUrl));
+  });
+
   document.querySelectorAll(".vote-btn[data-nominee]").forEach((btn) => {
     btn.addEventListener("click", async () => {
       const categoryId = btn.dataset.category;

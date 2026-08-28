@@ -768,6 +768,100 @@ img { max-width: 100%; display: block; }
 .btn-jury-reject:hover:not(:disabled) { border-color: #ff6b6b; color: #ff6b6b; }
 .btn-jury-wrong:hover:not(:disabled) { border-color: var(--rail); color: var(--rail); }
 
+/* Clip-Player-Fenster (Abstimmungsphase) */
+.clip-play-btn {
+  background: none;
+  border: none;
+  color: var(--rail);
+  text-decoration: underline;
+  cursor: pointer;
+  font: inherit;
+  padding: 0;
+  text-align: left;
+  word-break: break-all;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.clip-play-btn:hover { color: var(--accent); }
+
+.clip-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.clip-modal.open { display: flex; }
+
+.clip-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(5, 6, 10, 0.85);
+  backdrop-filter: blur(2px);
+}
+
+.clip-modal-dialog {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 900px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+}
+
+.clip-modal-close {
+  position: absolute;
+  top: -14px;
+  right: -14px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #191203;
+  border: none;
+  font-size: 1.3rem;
+  font-weight: 800;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.clip-modal-frame {
+  position: relative;
+  width: 100%;
+  height: 0;
+  padding-bottom: 56.25%;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #000;
+}
+
+.clip-modal-frame iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.clip-modal-fallback {
+  padding: 40px 20px;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.clip-modal-fallback p { margin: 0 0 16px; }
+
+body.clip-modal-open { overflow: hidden; }
+
 /* Footer */
 .site-footer {
   border-top: 1px solid var(--border);
