@@ -12,7 +12,7 @@
 
 const SITE_PHASE = "submission";
 
-const SUBMISSION_DEADLINE = "2026-10-15T23:59:59+02:00";
+const SUBMISSION_DEADLINE = "2026-11-16T23:59:59+01:00";
 
 /*
  * Gewichtung des finalen Votings. Muss in Summe 1 (100%) ergeben und
