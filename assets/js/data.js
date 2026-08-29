@@ -94,6 +94,12 @@ const CATEGORIES = [
     description: "Das beste Community- oder Stream-Event des Jahres. Bitte im Formular den Namen des Events nennen."
   },
   {
+    id: "beste-zuschaueraktion",
+    icon: "🎁",
+    name: "Beste Zuschaueraktion",
+    description: "Die geilste Aktion aus der Community – Spende, Überraschung oder Aktion, die den Stream bereichert hat."
+  },
+  {
     id: "community-mvp",
     icon: "🏆",
     name: "Community-MVP",
