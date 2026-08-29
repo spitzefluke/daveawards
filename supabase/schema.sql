@@ -45,6 +45,23 @@ create policy "Public can submit clips"
     and reviewed_by is null
   );
 
+-- Auch eingeloggte Jury-/Streamer-Jury-Konten sollen Clips einreichen
+-- können (z. B. weil sie selbst auch Teil der Community sind) – ohne
+-- diese Policy würde ein aktiver Login (localStorage-Session) das
+-- Einreichen blockieren, weil Supabase die Anfrage dann als
+-- "authenticated" statt "anon" sendet.
+drop policy if exists "Authenticated can also submit clips" on public.submissions;
+create policy "Authenticated can also submit clips"
+  on public.submissions
+  for insert
+  to authenticated
+  with check (
+    status = 'pending'
+    and suggested_category_id is null
+    and reviewed_at is null
+    and reviewed_by is null
+  );
+
 -- Für "pending"/"unpassend"/"falsche_kategorie" gibt es bewusst KEINE
 -- Select-Policy für "anon": normale Besucher:innen können diese
 -- Einreichungen nicht einsehen – das ist die technische Umsetzung von
