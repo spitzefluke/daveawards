@@ -131,7 +131,9 @@ function wireFilters() {
   if (categorySelect && typeof CATEGORIES !== "undefined") {
     categorySelect.innerHTML =
       `<option value="">Alle Kategorien</option>` +
-      CATEGORIES.map((cat) => `<option value="${cat.id}">${cat.icon} ${cat.name}</option>`).join("");
+      CATEGORIES.filter((cat) => cat.id !== CLIP_OF_YEAR_CATEGORY_ID)
+        .map((cat) => `<option value="${cat.id}">${cat.icon} ${cat.name}</option>`)
+        .join("");
   }
   [categorySelect, statusSelect].forEach((el) => {
     if (el) el.addEventListener("change", loadSubmissions);
@@ -184,7 +186,7 @@ function renderSubmissionRow(row) {
     (typeof SUBMISSION_STATUS_LABELS !== "undefined" && SUBMISSION_STATUS_LABELS[row.status]) ||
     row.status;
   const categoryOptions = (typeof CATEGORIES !== "undefined" ? CATEGORIES : [])
-    .filter((c) => c.id !== row.category_id)
+    .filter((c) => c.id !== row.category_id && c.id !== CLIP_OF_YEAR_CATEGORY_ID)
     .map((c) => `<option value="${c.id}">${c.icon} ${c.name}</option>`)
     .join("");
 
@@ -302,6 +304,15 @@ async function loadVotingNominees() {
 
   list.innerHTML = `<p class="jury-loading">Lade Nominierte…</p>`;
 
+  const {
+    data: { user }
+  } = await supabaseClient.auth.getUser();
+
+  if (categoryId === CLIP_OF_YEAR_CATEGORY_ID) {
+    await loadClipOfTheYearVoting(list, user);
+    return;
+  }
+
   const { data: nominees, error } = await supabaseClient
     .from("nominees")
     .select("*")
@@ -318,10 +329,6 @@ async function loadVotingNominees() {
     list.innerHTML = `<p class="jury-loading">Für diese Kategorie gibt es noch keine von der Jury freigegebenen Nominierten.</p>`;
     return;
   }
-
-  const {
-    data: { user }
-  } = await supabaseClient.auth.getUser();
 
   const { data: myVotes } = await supabaseClient
     .from("votes")
@@ -343,7 +350,75 @@ async function loadVotingNominees() {
   });
 }
 
-function renderNomineeVoteRow(nominee, myVoteNomineeId) {
+/*
+ * "Clip des Jahres" hat keine eigenen Einreichungen: die Auswahl besteht
+ * aus genau den Clips, für die diese Jury-/Streamer-Jury-Person selbst
+ * schon in den anderen Kategorien gestimmt hat.
+ */
+async function loadClipOfTheYearVoting(list, user) {
+  const otherCategoryIds = CATEGORIES.filter((c) => c.id !== CLIP_OF_YEAR_CATEGORY_ID).map((c) => c.id);
+
+  const { data: myVotes, error: votesError } = await supabaseClient
+    .from("votes")
+    .select("category_id, nominee_id")
+    .eq("voter_type", currentUserRole)
+    .eq("voter_id", user.id)
+    .in("category_id", otherCategoryIds);
+
+  if (votesError) {
+    console.error(votesError);
+    list.innerHTML = `<p class="jury-loading">Fehler beim Laden deiner bisherigen Stimmen.</p>`;
+    return;
+  }
+
+  if (!myVotes || myVotes.length === 0) {
+    list.innerHTML = `<p class="jury-loading">Stimme zuerst in den anderen Kategorien ab – der Clip des Jahres wird aus deinen eigenen Favoriten ermittelt.</p>`;
+    return;
+  }
+
+  const { data: nominees, error } = await supabaseClient
+    .from("nominees")
+    .select("*")
+    .in(
+      "id",
+      myVotes.map((v) => v.nominee_id)
+    )
+    .order("created_at", { ascending: true });
+
+  if (error) {
+    console.error(error);
+    list.innerHTML = `<p class="jury-loading">Fehler beim Laden der Nominierten.</p>`;
+    return;
+  }
+
+  if (!nominees || nominees.length === 0) {
+    list.innerHTML = `<p class="jury-loading">Stimme zuerst in den anderen Kategorien ab – der Clip des Jahres wird aus deinen eigenen Favoriten ermittelt.</p>`;
+    return;
+  }
+
+  const { data: myFinalVotes } = await supabaseClient
+    .from("votes")
+    .select("nominee_id")
+    .eq("category_id", CLIP_OF_YEAR_CATEGORY_ID)
+    .eq("voter_type", currentUserRole)
+    .eq("voter_id", user.id);
+
+  const myVoteNomineeId = myFinalVotes && myFinalVotes.length > 0 ? myFinalVotes[0].nominee_id : null;
+
+  list.innerHTML = nominees
+    .map((n) => renderNomineeVoteRow(n, myVoteNomineeId, CATEGORIES.find((c) => c.id === n.category_id)))
+    .join("");
+
+  list.querySelectorAll(".clip-play-btn[data-clip-url]").forEach((btn) => {
+    btn.addEventListener("click", () => openClipModal(btn.dataset.clipUrl));
+  });
+
+  list.querySelectorAll("button[data-vote-nominee]").forEach((btn) => {
+    btn.addEventListener("click", () => castVote(CLIP_OF_YEAR_CATEGORY_ID, btn.dataset.voteNominee));
+  });
+}
+
+function renderNomineeVoteRow(nominee, myVoteNomineeId, originCategory) {
   const isMyVote = nominee.id === myVoteNomineeId;
   const isSafeUrl = /^https?:\/\//i.test(nominee.clip_url || "");
   const clipLinkHtml = isSafeUrl
@@ -352,6 +427,7 @@ function renderNomineeVoteRow(nominee, myVoteNomineeId) {
 
   return `
     <div class="jury-row">
+      ${originCategory ? `<div class="jury-category">${originCategory.icon} ${escapeHtml(originCategory.name)}</div>` : ""}
       ${clipLinkHtml}
       ${nominee.submitter_name ? `<div class="jury-submitter">von ${escapeHtml(nominee.submitter_name)}</div>` : ""}
       <div class="jury-actions">

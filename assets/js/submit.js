@@ -12,9 +12,13 @@ function populateCategorySelect() {
   const select = document.querySelector("#submission-category");
   if (!select || typeof CATEGORIES === "undefined") return;
 
+  const submittableCategories = CATEGORIES.filter(
+    (cat) => cat.id !== (typeof CLIP_OF_YEAR_CATEGORY_ID !== "undefined" ? CLIP_OF_YEAR_CATEGORY_ID : "clip-des-jahres")
+  );
+
   select.innerHTML =
     `<option value="" disabled selected>Kategorie auswählen…</option>` +
-    CATEGORIES.map((cat) => `<option value="${cat.id}">${cat.icon} ${cat.name}</option>`).join("");
+    submittableCategories.map((cat) => `<option value="${cat.id}">${cat.icon} ${cat.name}</option>`).join("");
 }
 
 function wireNoteHint() {

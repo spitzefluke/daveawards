@@ -32,6 +32,15 @@ const VOTER_TYPE_LABELS = {
   community: "Community"
 };
 
+/*
+ * "Clip des Jahres" wird nicht direkt beim Einreichen ausgewählt (siehe
+ * submit.js), sondern erst im Voting ermittelt: aus den Clips, die
+ * man selbst schon in den anderen Kategorien nominiert/gewählt hat.
+ * Steht deshalb bewusst am Ende von CATEGORIES, damit sie überall (Auswahl,
+ * Übersicht, Voting-Reihenfolge) zuletzt erscheint.
+ */
+const CLIP_OF_YEAR_CATEGORY_ID = "clip-des-jahres";
+
 const CATEGORIES = [
   {
     id: "wtf-was-passiert-hier",
@@ -74,12 +83,6 @@ const CATEGORIES = [
     icon: "🥰",
     name: "Süßester Moment",
     description: "Der Moment, der der Community ein 🥰 entlockt hat."
-  },
-  {
-    id: "clip-des-jahres",
-    icon: "🎬",
-    name: "Clip des Jahres",
-    description: "Der Stream-Moment, der am meisten im Gedächtnis geblieben ist."
   },
   {
     id: "bester-offstream-moment",
@@ -128,6 +131,12 @@ const CATEGORIES = [
     icon: "🥇",
     name: "Bester Win",
     description: "Der geilste, unwahrscheinlichste oder verdienteste Sieg des Jahres."
+  },
+  {
+    id: "clip-des-jahres",
+    icon: "🎬",
+    name: "Clip des Jahres",
+    description: "Der Stream-Moment, der am meisten im Gedächtnis geblieben ist. Kann nicht separat eingereicht werden: Im Voting wählt ihr ihn zuletzt aus euren eigenen Favoriten der anderen Kategorien."
   }
 ];
 
