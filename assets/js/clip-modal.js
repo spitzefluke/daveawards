@@ -56,6 +56,76 @@ function getClipEmbed(url) {
   return null;
 }
 
+/* Vorschaubilder für die Abstimmung. YouTube-Thumbnails lassen sich
+   direkt aus der Video-ID bauen; für Twitch-Clips gibt es ohne eigenen
+   API-Key keine offizielle Thumbnail-URL, daher nutzen wir noembed.com
+   (kostenloser, keyless oEmbed-Proxy) als kleinen Umweg. */
+const clipThumbnailCache = new Map();
+
+function getYouTubeVideoId(url) {
+  let u;
+  try {
+    u = new URL(url);
+  } catch (e) {
+    return null;
+  }
+  const host = u.hostname.replace(/^www\./, "").toLowerCase();
+  if (host === "youtu.be") return u.pathname.replace(/^\//, "").split("/")[0] || null;
+  if (host === "youtube.com") {
+    if (u.pathname === "/watch" && u.searchParams.get("v")) return u.searchParams.get("v");
+    const shortsMatch = u.pathname.match(/^\/shorts\/([^/?]+)/);
+    if (shortsMatch) return shortsMatch[1];
+  }
+  return null;
+}
+
+function isTwitchClipUrl(url) {
+  let u;
+  try {
+    u = new URL(url);
+  } catch (e) {
+    return false;
+  }
+  const host = u.hostname.replace(/^www\./, "").toLowerCase();
+  return host === "clips.twitch.tv" || ((host === "twitch.tv" || host === "m.twitch.tv") && /\/clip\//i.test(u.pathname));
+}
+
+async function resolveClipThumbnail(url) {
+  if (clipThumbnailCache.has(url)) return clipThumbnailCache.get(url);
+
+  const promise = (async () => {
+    const youTubeId = getYouTubeVideoId(url);
+    if (youTubeId) return `https://img.youtube.com/vi/${encodeURIComponent(youTubeId)}/hqdefault.jpg`;
+
+    if (isTwitchClipUrl(url)) {
+      try {
+        const res = await fetch(`https://noembed.com/embed?url=${encodeURIComponent(url)}`);
+        if (!res.ok) return null;
+        const data = await res.json();
+        return data.thumbnail_url || null;
+      } catch (e) {
+        return null;
+      }
+    }
+
+    return null;
+  })();
+
+  clipThumbnailCache.set(url, promise);
+  return promise;
+}
+
+/* Setzt bei allen `img.clip-thumb[data-clip-url]` innerhalb von `root`
+   das echte Vorschaubild, sobald es geladen ist. Ohne ermittelbares
+   Vorschaubild bleibt der graue Platzhalter aus dem CSS sichtbar. */
+function loadClipThumbnails(root) {
+  (root || document).querySelectorAll("img.clip-thumb[data-clip-url]").forEach((img) => {
+    resolveClipThumbnail(img.dataset.clipUrl).then((thumbUrl) => {
+      if (thumbUrl) img.src = thumbUrl;
+    });
+  });
+}
+
 let clipModalEl = null;
 
 function ensureClipModal() {
