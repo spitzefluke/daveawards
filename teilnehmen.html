@@ -12,6 +12,8 @@
 </head>
 <body>
 
+<div id="google_translate_element"></div>
+
 <header class="site-header">
   <nav class="nav">
     <a class="brand" href="index.html"><img src="assets/img/logo.png" alt="" class="brand-logo" />Dave<span class="accent">Awards</span></a>
@@ -22,6 +24,17 @@
       <li><a href="regeln.html">Regeln &amp; FAQ</a></li>
       <li><a href="gewinner.html">Gewinner</a></li>
       <li><a href="teilnehmen.html" class="nav-cta">Clip einreichen</a></li>
+      <li class="nav-lang-item">
+        <select id="lang-switcher" class="lang-switcher" aria-label="Sprache wählen">
+          <option value="de">🇩🇪 Deutsch</option>
+          <option value="en">🇬🇧 English</option>
+          <option value="fr">🇫🇷 Français</option>
+          <option value="es">🇪🇸 Español</option>
+          <option value="tr">🇹🇷 Türkçe</option>
+          <option value="pl">🇵🇱 Polski</option>
+          <option value="ru">🇷🇺 Русский</option>
+        </select>
+      </li>
     </ul>
   </nav>
 </header>
@@ -148,5 +161,7 @@
 <script src="assets/js/data.js"></script>
 <script src="assets/js/main.js"></script>
 <script src="assets/js/submit.js"></script>
+<script src="assets/js/translate.js"></script>
+<script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit" async></script>
 </body>
 </html>

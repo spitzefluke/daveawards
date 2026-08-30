@@ -126,6 +126,29 @@ img { max-width: 100%; display: block; }
   color: #191203 !important;
 }
 
+.nav-lang-item { display: flex; align-items: center; }
+
+.lang-switcher {
+  background: var(--bg-alt);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-family: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+/* Google-Translate-Widget: eigenes Dropdown (#lang-switcher) nutzen,
+   die Standard-Google-Oberfläche komplett ausblenden. */
+#google_translate_element,
+.goog-te-banner-frame,
+.goog-te-gadget-icon { display: none !important; }
+body { top: 0 !important; }
+.goog-tooltip,
+.goog-tooltip:hover { display: none !important; }
+.goog-text-highlight { background: none !important; box-shadow: none !important; }
+
 .nav-toggle {
   display: none;
   background: none;
