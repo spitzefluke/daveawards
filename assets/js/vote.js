@@ -80,6 +80,7 @@ async function renderCommunityVoting() {
     `<div class="empty-state"><span class="emoji">🏗️</span><p>Für diese Runde stehen noch keine Nominierten fest.</p></div>`;
 
   wireCommunityVoteButtons();
+  loadClipThumbnails(container);
 }
 
 /*
@@ -116,6 +117,9 @@ function renderCategoryVoteBlock(cat, nominees, votedNomineeId) {
     .map((n) => {
       const isVoted = n.id === votedNomineeId;
       const isSafeUrl = /^https?:\/\//i.test(n.clip_url || "");
+      const thumbHtml = isSafeUrl
+        ? `<img class="clip-thumb" data-clip-url="${escapeAttrVote(n.clip_url)}" alt="" loading="lazy" />`
+        : "";
       const clipLinkHtml = isSafeUrl
         ? `<button type="button" class="clip-play-btn" data-clip-url="${escapeAttrVote(n.clip_url)}">▶ Clip ansehen</button>`
         : `<span class="jury-link">${escapeHtmlVote(n.clip_url)}</span>`;
@@ -134,7 +138,8 @@ function renderCategoryVoteBlock(cat, nominees, votedNomineeId) {
         : `<button class="vote-btn" data-category="${cat.id}" data-nominee="${n.id}">Abstimmen</button>`;
 
       return `
-        <div class="nominee" style="grid-template-columns: 1fr auto;">
+        <div class="nominee nominee-with-thumb">
+          ${thumbHtml}
           <div class="info">
             ${clipLinkHtml}
             ${taglineHtml}

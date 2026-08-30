@@ -68,6 +68,7 @@
         <div class="jury-tabs">
           <button class="jury-tab-btn active" data-tab-target="jury-tab-curation">Einreichungen prüfen</button>
           <button class="jury-tab-btn" data-tab-target="jury-tab-voting">Gewinner wählen</button>
+          <button class="jury-tab-btn" data-tab-target="jury-tab-results">Ergebnisse</button>
         </div>
 
         <div id="jury-tab-curation" class="jury-tab" style="display:block;">
@@ -106,6 +107,21 @@
             <button id="voting-refresh" class="btn btn-secondary">Aktualisieren</button>
           </div>
           <div id="voting-list"></div>
+        </div>
+
+        <div id="jury-tab-results" class="jury-tab" style="display:none;">
+          <div class="demo-note">
+            🏆 Der Gewinner bzw. die Gewinnerin jeder Kategorie wird
+            automatisch vom System aus den gewichteten Stimmenanteilen
+            berechnet (Jury 15% · Streamer-Jury 25% · Community 60%) – die
+            Jury trifft hier keine eigene Entscheidung. Aus Fairness-Gründen
+            werden die Ergebnisse erst angezeigt, sobald die Voting-Phase
+            beendet ist.
+          </div>
+          <div class="jury-toolbar">
+            <button id="results-refresh" class="btn btn-secondary">Aktualisieren</button>
+          </div>
+          <div id="jury-results"></div>
         </div>
       </div>
     </div>

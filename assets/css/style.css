@@ -404,6 +404,20 @@ img { max-width: 100%; display: block; }
 .nominee .name { font-weight: 700; }
 .nominee .tagline { color: var(--text-muted); font-size: 0.85rem; }
 
+.nominee-with-thumb { grid-template-columns: 96px 1fr auto; }
+.nominee-with-thumb .clip-thumb { width: 96px; height: 54px; margin-bottom: 0; }
+
+.clip-thumb {
+  display: block;
+  width: 160px;
+  max-width: 100%;
+  height: 90px;
+  object-fit: cover;
+  border-radius: 8px;
+  background: var(--border);
+  margin-bottom: 8px;
+}
+
 .nominee .bar-track {
   grid-column: 1 / -1;
   height: 8px;
@@ -691,6 +705,7 @@ img { max-width: 100%; display: block; }
 }
 
 .jury-category { color: var(--text-muted); font-weight: 700; }
+.jury-winner-badge { color: var(--accent); font-weight: 700; margin-bottom: 6px; }
 .jury-date { color: var(--text-muted); margin-left: auto; }
 
 .jury-badge {

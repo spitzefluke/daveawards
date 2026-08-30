@@ -14,6 +14,7 @@ document.addEventListener("DOMContentLoaded", () => {
   wireFilters();
   wireTabs();
   populateVotingCategorySelect();
+  wireResultsRefresh();
 
   supabaseClient.auth.getSession().then(({ data }) => {
     handleAuthChange(data.session);
@@ -111,7 +112,10 @@ function wireLogoutButton() {
 /* ---------- Tabs ---------- */
 function wireTabs() {
   document.querySelectorAll("[data-tab-target]").forEach((btn) => {
-    btn.addEventListener("click", () => switchTab(btn.dataset.tabTarget));
+    btn.addEventListener("click", () => {
+      switchTab(btn.dataset.tabTarget);
+      if (btn.dataset.tabTarget === "jury-tab-results") loadResults();
+    });
   });
 }
 
@@ -295,12 +299,21 @@ function populateVotingCategorySelect() {
   if (refreshBtn) refreshBtn.addEventListener("click", loadVotingNominees);
 }
 
+function isVotingPhaseOpen() {
+  return typeof SITE_PHASE !== "undefined" && SITE_PHASE === "voting";
+}
+
 async function loadVotingNominees() {
   const list = document.querySelector("#voting-list");
   if (!list) return;
 
   const categoryId = document.querySelector("#voting-filter-category")?.value;
   if (!categoryId) return;
+
+  if (!isVotingPhaseOpen()) {
+    list.innerHTML = `<p class="jury-loading">🔒 Das Voting ist noch nicht offen. Es startet, sobald die Einreichungs- und Sichtungsphase abgeschlossen ist.</p>`;
+    return;
+  }
 
   list.innerHTML = `<p class="jury-loading">Lade Nominierte…</p>`;
 
@@ -348,6 +361,8 @@ async function loadVotingNominees() {
   list.querySelectorAll("button[data-vote-nominee]").forEach((btn) => {
     btn.addEventListener("click", () => castVote(categoryId, btn.dataset.voteNominee));
   });
+
+  loadClipThumbnails(list);
 }
 
 /*
@@ -416,11 +431,16 @@ async function loadClipOfTheYearVoting(list, user) {
   list.querySelectorAll("button[data-vote-nominee]").forEach((btn) => {
     btn.addEventListener("click", () => castVote(CLIP_OF_YEAR_CATEGORY_ID, btn.dataset.voteNominee));
   });
+
+  loadClipThumbnails(list);
 }
 
 function renderNomineeVoteRow(nominee, myVoteNomineeId, originCategory) {
   const isMyVote = nominee.id === myVoteNomineeId;
   const isSafeUrl = /^https?:\/\//i.test(nominee.clip_url || "");
+  const thumbHtml = isSafeUrl
+    ? `<img class="clip-thumb" data-clip-url="${escapeAttr(nominee.clip_url)}" alt="" loading="lazy" />`
+    : "";
   const clipLinkHtml = isSafeUrl
     ? `<button type="button" class="clip-play-btn" data-clip-url="${escapeAttr(nominee.clip_url)}">▶ Clip ansehen</button>`
     : `<span class="jury-link jury-link-unsafe">${escapeHtml(nominee.clip_url)}</span>`;
@@ -428,6 +448,7 @@ function renderNomineeVoteRow(nominee, myVoteNomineeId, originCategory) {
   return `
     <div class="jury-row">
       ${originCategory ? `<div class="jury-category">${originCategory.icon} ${escapeHtml(originCategory.name)}</div>` : ""}
+      ${thumbHtml}
       ${clipLinkHtml}
       ${nominee.submitter_name ? `<div class="jury-submitter">von ${escapeHtml(nominee.submitter_name)}</div>` : ""}
       <div class="jury-actions">
@@ -472,6 +493,92 @@ async function castVote(categoryId, nomineeId) {
   }
 
   loadVotingNominees();
+}
+
+/* ---------- Ergebnisse: automatisch vom System berechnet, nicht von der Jury ---------- */
+function isResultsPhaseOpen() {
+  return typeof SITE_PHASE !== "undefined" && SITE_PHASE === "closed";
+}
+
+function wireResultsRefresh() {
+  const btn = document.querySelector("#results-refresh");
+  if (btn) btn.addEventListener("click", loadResults);
+}
+
+async function loadResults() {
+  const container = document.querySelector("#jury-results");
+  if (!container) return;
+
+  if (!isResultsPhaseOpen()) {
+    container.innerHTML = `<p class="jury-loading">🔒 Die Ergebnisse werden automatisch angezeigt, sobald die Voting-Phase beendet ist – Zwischenstände werden bewusst nicht veröffentlicht.</p>`;
+    return;
+  }
+
+  container.innerHTML = `<p class="jury-loading">Lade Ergebnisse…</p>`;
+
+  const { data, error } = await supabaseClient
+    .from("weighted_results")
+    .select("*")
+    .order("category_id", { ascending: true })
+    .order("weighted_score_pct", { ascending: false });
+
+  if (error) {
+    console.error(error);
+    container.innerHTML = `<p class="jury-loading">Ergebnisse konnten nicht geladen werden.</p>`;
+    return;
+  }
+
+  if (!data || data.length === 0) {
+    container.innerHTML = `<p class="jury-loading">Für diese Runde liegen noch keine Stimmen vor.</p>`;
+    return;
+  }
+
+  const byCategory = new Map();
+  data.forEach((row) => {
+    if (!byCategory.has(row.category_id)) byCategory.set(row.category_id, []);
+    byCategory.get(row.category_id).push(row);
+  });
+
+  container.innerHTML = CATEGORIES.filter((cat) => byCategory.has(cat.id))
+    .map((cat) => renderResultCategory(cat, byCategory.get(cat.id)))
+    .join("");
+
+  container.querySelectorAll(".clip-play-btn[data-clip-url]").forEach((btn) => {
+    btn.addEventListener("click", () => openClipModal(btn.dataset.clipUrl));
+  });
+
+  loadClipThumbnails(container);
+}
+
+function renderResultCategory(cat, rows) {
+  const winner = rows[0];
+  const rest = rows.slice(1);
+
+  return `
+    <div class="vote-category">
+      <div class="vote-category-head">
+        <span class="icon">${cat.icon}</span>
+        <div><h3>${cat.name}</h3></div>
+      </div>
+      ${renderResultRow(winner, true)}
+      ${rest.length > 0 ? `<details><summary>Weitere Nominierte (${rest.length})</summary>${rest.map((r) => renderResultRow(r, false)).join("")}</details>` : ""}
+    </div>`;
+}
+
+function renderResultRow(row, isWinner) {
+  const isSafeUrl = /^https?:\/\//i.test(row.clip_url || "");
+  const clipLinkHtml = isSafeUrl
+    ? `<button type="button" class="clip-play-btn" data-clip-url="${escapeAttr(row.clip_url)}">▶ Clip ansehen</button>`
+    : `<span class="jury-link jury-link-unsafe">${escapeHtml(row.clip_url)}</span>`;
+
+  return `
+    <div class="jury-row">
+      ${isWinner ? `<div class="jury-winner-badge">🏆 System-Gewinner (automatisch ermittelt)</div>` : ""}
+      ${isSafeUrl ? `<img class="clip-thumb" data-clip-url="${escapeAttr(row.clip_url)}" alt="" loading="lazy" />` : ""}
+      ${clipLinkHtml}
+      ${row.submitter_name ? `<div class="jury-submitter">von ${escapeHtml(row.submitter_name)}</div>` : ""}
+      <div class="jury-submitter">Jury ${row.jury_pct}% · Streamer-Jury ${row.streamer_jury_pct}% · Community ${row.community_pct}% → gewichtet ${row.weighted_score_pct}%</div>
+    </div>`;
 }
 
 function setStatus(el, type, message) {

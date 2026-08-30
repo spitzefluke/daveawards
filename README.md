@@ -16,8 +16,12 @@ Der Ablauf einer Runde:
    zusammengerechnet: **Jury 15%**, **Streamer-Jury 25%**, **Community 60%**
    (Community stimmt auf `kategorien.html`, sobald `SITE_PHASE` auf
    `"voting"` steht; Jury und Streamer-Jury stimmen im Tab "Gewinner wählen"
-   in `jury.html`).
-4. **Gewinner-Bekanntgabe** – Hall of Fame auf `gewinner.html`.
+   in `jury.html` – ebenfalls erst, sobald `SITE_PHASE` auf `"voting"`
+   steht, vorher ist der Tab gesperrt).
+4. **Gewinner-Bekanntgabe** – der Gewinner bzw. die Gewinnerin jeder
+   Kategorie wird automatisch vom System aus den gewichteten
+   Stimmenanteilen berechnet, nicht von der Jury entschieden (siehe unten).
+   Hall of Fame auf `gewinner.html`.
 
 ## Architektur
 
@@ -57,13 +61,20 @@ Besucher:innen dieselben Daten sehen (nicht nur lokal im eigenen Browser):
 
 ### Gewinner:innen ermitteln
 
-Nach Ende der Voting-Phase im Supabase **SQL Editor**:
+Sobald `SITE_PHASE` in `assets/js/data.js` auf `"closed"` gesetzt wird,
+zeigt der Tab **"Ergebnisse"** in `jury.html` automatisch pro Kategorie
+den Clip mit dem höchsten `weighted_score_pct` als Gewinner an – berechnet
+direkt aus der `weighted_results`-View, ohne manuellen Eingriff der Jury.
+Vor Rundenende (`SITE_PHASE` ≠ `"closed"`) bleibt der Tab aus
+Fairness-Gründen gesperrt, damit keine Zwischenstände durchsickern.
+
+Für die dauerhafte Hall of Fame die Gewinner:innen danach manuell in
+`assets/js/data.js` (`PAST_WINNERS`) eintragen, damit sie auf
+`gewinner.html` erscheinen. Alternativ zum Nachschlagen im Supabase
+**SQL Editor**:
 ```sql
 select * from public.weighted_results where category_id = 'clip-des-jahres';
 ```
-Die Zeile mit dem höchsten `weighted_score_pct` je Kategorie gewinnt. Die
-Gewinner:innen dann wie gehabt manuell in `assets/js/data.js`
-(`PAST_WINNERS`) eintragen, damit sie auf `gewinner.html` erscheinen.
 
 ## Supabase einrichten (einmalig)
 
