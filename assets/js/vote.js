@@ -57,18 +57,58 @@ async function renderCommunityVoting() {
   }
 
   const localVotes = getLocalVotes();
+  const nomineesById = new Map((nominees || []).map((n) => [n.id, n]));
+  const regularCategories = CATEGORIES.filter((cat) => cat.id !== CLIP_OF_YEAR_CATEGORY_ID);
+  const finalCategory = CATEGORIES.find((cat) => cat.id === CLIP_OF_YEAR_CATEGORY_ID);
 
-  const blocks = CATEGORIES.map((cat) => {
+  const votedCategoryIds = [];
+  const blocks = regularCategories.map((cat) => {
     const catNominees = (nominees || []).filter((n) => n.category_id === cat.id);
     if (catNominees.length === 0) return "";
+    votedCategoryIds.push(cat.id);
     return renderCategoryVoteBlock(cat, catNominees, localVotes[cat.id]);
-  }).join("");
+  });
+
+  if (finalCategory) {
+    blocks.push(renderClipOfTheYearBlock(finalCategory, votedCategoryIds, localVotes, nomineesById));
+  }
+
+  const html = blocks.join("");
 
   container.innerHTML =
-    blocks ||
+    html ||
     `<div class="empty-state"><span class="emoji">🏗️</span><p>Für diese Runde stehen noch keine Nominierten fest.</p></div>`;
 
   wireCommunityVoteButtons();
+}
+
+/*
+ * "Clip des Jahres" hat keine eigenen Einreichungen: die Auswahl besteht
+ * aus genau den Clips, die diese Person selbst schon in den anderen
+ * Kategorien gewählt hat (siehe localVotes/getLocalVotes).
+ */
+function renderClipOfTheYearBlock(cat, votedCategoryIds, localVotes, nomineesById) {
+  if (votedCategoryIds.length === 0) return "";
+
+  const missing = votedCategoryIds.some((id) => !localVotes[id]);
+  if (missing) {
+    return `
+      <div class="vote-category" id="vote-cat-${cat.id}">
+        <div class="vote-category-head">
+          <span class="icon">${cat.icon}</span>
+          <div>
+            <h3>${cat.name}</h3>
+            <p>${cat.description}</p>
+          </div>
+        </div>
+        <div class="demo-note">🔒 Stimmt zuerst in allen anderen Kategorien ab – der Clip des Jahres wird aus euren eigenen Favoriten ermittelt.</div>
+      </div>`;
+  }
+
+  const picks = votedCategoryIds.map((id) => nomineesById.get(localVotes[id])).filter(Boolean);
+  if (picks.length === 0) return "";
+
+  return renderCategoryVoteBlock(cat, picks, localVotes[cat.id]);
 }
 
 function renderCategoryVoteBlock(cat, nominees, votedNomineeId) {
@@ -80,6 +120,13 @@ function renderCategoryVoteBlock(cat, nominees, votedNomineeId) {
         ? `<button type="button" class="clip-play-btn" data-clip-url="${escapeAttrVote(n.clip_url)}">▶ Clip ansehen</button>`
         : `<span class="jury-link">${escapeHtmlVote(n.clip_url)}</span>`;
 
+      const originCategory = n.category_id !== cat.id ? CATEGORIES.find((c) => c.id === n.category_id) : null;
+      const taglineHtml = originCategory
+        ? `<div class="tagline">${originCategory.icon} ${escapeHtmlVote(originCategory.name)}${n.submitter_name ? " · von " + escapeHtmlVote(n.submitter_name) : ""}</div>`
+        : n.submitter_name
+          ? `<div class="tagline">von ${escapeHtmlVote(n.submitter_name)}</div>`
+          : "";
+
       const buttonHtml = votedNomineeId
         ? isVoted
           ? `<button class="vote-btn" disabled>✓ Deine Stimme</button>`
@@ -90,7 +137,7 @@ function renderCategoryVoteBlock(cat, nominees, votedNomineeId) {
         <div class="nominee" style="grid-template-columns: 1fr auto;">
           <div class="info">
             ${clipLinkHtml}
-            ${n.submitter_name ? `<div class="tagline">von ${escapeHtmlVote(n.submitter_name)}</div>` : ""}
+            ${taglineHtml}
           </div>
           ${buttonHtml}
         </div>`;
