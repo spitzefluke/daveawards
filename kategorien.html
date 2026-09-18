@@ -2,150 +2,16 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta http-equiv="refresh" content="0; url=index.html#kategorien" />
+<link rel="canonical" href="index.html#kategorien" />
+<meta name="robots" content="noindex" />
 <title>Kategorien – DaveAwards</title>
-<meta name="description" content="Alle Kategorien der DaveAwards im Überblick." />
-<link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon-32.png" />
-<link rel="icon" type="image/png" sizes="16x16" href="assets/img/favicon-16.png" />
-<link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png" />
 <link rel="stylesheet" href="assets/css/style.css" />
 </head>
 <body>
-
-<div id="google_translate_element"></div>
-
-<header class="site-header">
-  <nav class="nav">
-    <a class="brand" href="index.html"><img src="assets/img/logo.png" alt="" class="brand-logo" />Dave<span class="accent">Awards</span></a>
-    <button class="nav-toggle" aria-label="Menü öffnen" aria-expanded="false">☰</button>
-    <ul class="nav-links">
-      <li><a href="index.html">Start</a></li>
-      <li><a href="kategorien.html">Kategorien</a></li>
-      <li><a href="regeln.html">Regeln &amp; FAQ</a></li>
-      <li><a href="gewinner.html">Gewinner</a></li>
-      <li><a href="teilnehmen.html" class="nav-cta">Clip einreichen</a></li>
-      <li class="nav-lang-item">
-        <select id="lang-switcher" class="lang-switcher" aria-label="Sprache wählen">
-          <option value="de">🇩🇪 Deutsch</option>
-          <option value="en">🇬🇧 English</option>
-          <option value="fr">🇫🇷 Français</option>
-          <option value="es">🇪🇸 Español</option>
-          <option value="tr">🇹🇷 Türkçe</option>
-          <option value="pl">🇵🇱 Polski</option>
-          <option value="ru">🇷🇺 Русский</option>
-        </select>
-      </li>
-    </ul>
-  </nav>
-</header>
-<div class="rail-divider"></div>
-
-<main>
-  <section class="hero" style="padding-bottom: 24px;">
-    <div class="container">
-      <span class="badge" data-phase-badge>Einreichungsphase läuft</span>
-      <h1><span class="accent">Kategorien</span></h1>
-      <p class="lead" data-phase-lead>Das sind die Kategorien dieser Runde. Reicht passende Clips über die Einreichungsseite ein.</p>
-      <div data-phase-countdown>
-        <div class="countdown" data-countdown>
-          <div class="unit"><strong data-unit="days">–</strong><span>Tage</span></div>
-          <div class="unit"><strong data-unit="hours">–</strong><span>Std</span></div>
-          <div class="unit"><strong data-unit="minutes">–</strong><span>Min</span></div>
-          <div class="unit"><strong data-unit="seconds">–</strong><span>Sek</span></div>
-        </div>
-        <p class="countdown-note" data-countdown-note>bis die Einreichungsphase endet</p>
-      </div>
-    </div>
-  </section>
-
-  <section class="section" data-phase-submission>
-    <div class="container">
-      <div class="demo-note">
-        🔒 <strong>Voting ist noch nicht offen.</strong> Aktuell läuft die
-        Einreichungsphase: Es gibt noch keine öffentliche Nominierten-Liste
-        und kein Voting zu sehen. Die Jury sichtet zunächst alle eingereichten
-        Clips (passend / unpassend / falsche Kategorie); erst danach – in der
-        Voting-Phase – werden die geprüften Nominierten hier samt Abstimmung
-        angezeigt. Mehr dazu unter <a href="regeln.html">Regeln &amp; FAQ</a>.
-      </div>
-      <div class="category-grid" data-category-overview></div>
-      <div style="text-align:center; margin-top: 36px;">
-        <a href="teilnehmen.html" class="btn btn-primary">Clip für eine Kategorie einreichen</a>
-      </div>
-    </div>
-  </section>
-
-  <section class="section" data-phase-voting style="display:none;">
-    <div class="container">
-      <div class="demo-note">
-        🗳️ <strong>So zählt deine Stimme:</strong> Das Ergebnis setzt sich
-        gewichtet zusammen aus Jury (15%), Streamer-Jury (25%) und
-        Community-Voting (60%) – deine Stimme hier ist der Community-Anteil.
-        Eine Stimme pro Kategorie und Gerät, danach ist sie final.
-        "Clip des Jahres" steht ganz unten: Dort wählst du aus den Clips,
-        für die du zuvor schon in den anderen Kategorien gestimmt hast. Mehr
-        dazu unter <a href="regeln.html">Regeln &amp; FAQ</a>.
-      </div>
-      <div id="community-voting-categories"></div>
-    </div>
-  </section>
-
-  <section class="section" data-phase-closed style="display:none;">
-    <div class="container">
-      <div class="empty-state">
-        <span class="emoji">🏁</span>
-        <p>Das Voting für diese Runde ist beendet. Die Gewinner:innen
-        findet ihr auf der <a href="gewinner.html">Gewinner-Seite</a>.</p>
-      </div>
-    </div>
-  </section>
-</main>
-
-<footer class="site-footer">
-  <div class="container">
-    <div class="footer-grid">
-      <div>
-        <h4><img src="assets/img/logo.png" alt="" class="footer-logo" />DaveAwards</h4>
-        <p>Das inoffizielle Fan-Award-Voting für die Community von Zugfahrer_DaveTV.</p>
-      </div>
-      <div>
-        <h4>Seiten</h4>
-        <ul>
-          <li><a href="kategorien.html">Kategorien</a></li>
-          <li><a href="regeln.html">Regeln &amp; FAQ</a></li>
-          <li><a href="gewinner.html">Gewinner</a></li>
-          <li><a href="teilnehmen.html">Clip einreichen</a></li>
-          <li><a href="jury.html">Jury-Login</a></li>
-        </ul>
-      </div>
-      <div>
-        <h4>Rechtliches</h4>
-        <ul>
-          <li><a href="impressum.html">Impressum</a></li>
-          <li><a href="datenschutz.html">Datenschutz</a></li>
-        </ul>
-      </div>
-    </div>
-    <div class="footer-disclaimer">
-      DaveAwards ist ein <strong>inoffizielles Fanprojekt</strong> von und für die Community
-      von Zugfahrer_DaveTV. Es besteht keine offizielle Verbindung oder Zusammenarbeit mit
-      Zugfahrer_DaveTV, Twitch oder verbundenen Unternehmen. Alle Marken- und Kanalnamen
-      gehören ihren jeweiligen Inhaber:innen.
-      <div class="footer-bottom">
-        <span>© 2026 DaveAwards Fanprojekt</span>
-        <span>Gemacht mit ❤️ von der Community</span>
-      </div>
-    </div>
-  </div>
-</footer>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
-<script src="assets/js/supabase-config.js"></script>
-<script src="assets/js/data.js"></script>
-<script src="assets/js/main.js"></script>
-<script src="assets/js/clip-modal.js"></script>
-<script src="assets/js/vote.js"></script>
-<script src="assets/js/translate.js"></script>
-<script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit" async></script>
+<div class="redirect-note">
+  <p>Die Kategorien sind jetzt Teil der <a href="index.html#kategorien">Startseite</a>.</p>
+</div>
+<script>location.replace("index.html#kategorien");</script>
 </body>
 </html>

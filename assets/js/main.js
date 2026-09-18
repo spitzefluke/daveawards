@@ -3,26 +3,14 @@
 document.addEventListener("DOMContentLoaded", () => {
   initNav();
   initCountdown();
-  renderCategoryTeasers();
   renderCategoryOverview();
+  initCategorySearch();
   renderWinners();
   applySitePhase();
   markActiveNavLink();
 });
 
 /* ---------- Phasen-Steuerung (Einreichung / Voting / Geschlossen) ---------- */
-const PHASE_BADGE_TEXT = {
-  submission: "Einreichungsphase läuft",
-  voting: "Voting läuft",
-  closed: "Runde beendet"
-};
-
-const PHASE_LEAD_TEXT = {
-  submission: "Das sind die Kategorien dieser Runde. Reicht passende Clips über die Einreichungsseite ein.",
-  voting: "Stimmt für eure Favorit:innen ab – eure Stimme zählt als Community-Anteil (60%) im Endergebnis.",
-  closed: "Das Voting ist beendet. Die Gewinner:innen findet ihr auf der Gewinner-Seite."
-};
-
 function applySitePhase() {
   if (typeof SITE_PHASE === "undefined") return;
   const sections = {
@@ -30,20 +18,10 @@ function applySitePhase() {
     voting: document.querySelector("[data-phase-voting]"),
     closed: document.querySelector("[data-phase-closed]")
   };
-  if (sections.submission || sections.voting || sections.closed) {
-    Object.entries(sections).forEach(([phase, el]) => {
-      if (el) el.style.display = phase === SITE_PHASE ? "block" : "none";
-    });
-  }
-
-  const badge = document.querySelector("[data-phase-badge]");
-  if (badge && PHASE_BADGE_TEXT[SITE_PHASE]) badge.textContent = PHASE_BADGE_TEXT[SITE_PHASE];
-
-  const lead = document.querySelector("[data-phase-lead]");
-  if (lead && PHASE_LEAD_TEXT[SITE_PHASE]) lead.textContent = PHASE_LEAD_TEXT[SITE_PHASE];
-
-  const countdownWrapper = document.querySelector("[data-phase-countdown]");
-  if (countdownWrapper) countdownWrapper.style.display = SITE_PHASE === "submission" ? "block" : "none";
+  if (!sections.submission && !sections.voting && !sections.closed) return;
+  Object.entries(sections).forEach(([phase, el]) => {
+    if (el) el.style.display = phase === SITE_PHASE ? "block" : "none";
+  });
 }
 
 /* ---------- Navigation (Mobile-Menü) ---------- */
@@ -55,6 +33,12 @@ function initNav() {
     links.classList.toggle("open");
     const expanded = links.classList.contains("open");
     toggle.setAttribute("aria-expanded", String(expanded));
+  });
+  links.querySelectorAll("a").forEach((a) => {
+    a.addEventListener("click", () => {
+      links.classList.remove("open");
+      toggle.setAttribute("aria-expanded", "false");
+    });
   });
 }
 
@@ -77,15 +61,36 @@ function initCountdown() {
   const unitMinutes = el.querySelector("[data-unit='minutes']");
   const unitSeconds = el.querySelector("[data-unit='seconds']");
   const noteEl = document.querySelector("[data-countdown-note]");
+  const labelEl = document.querySelector("[data-deadline-label]");
+  const fillEl = document.querySelector("[data-phase-fill]");
+  const pctEl = document.querySelector("[data-phase-pct]");
+
+  if (labelEl) {
+    labelEl.textContent = new Date(deadline).toLocaleDateString("de-DE", {
+      day: "2-digit",
+      month: "long",
+      year: "numeric"
+    });
+  }
+
+  function updatePhaseProgress() {
+    if (!fillEl && !pctEl) return;
+    const end = deadline;
+    const start = end - 1000 * 60 * 60 * 24 * 90; // 90-Tage-Referenzfenster für die Fortschrittsanzeige
+    const pct = Math.round(Math.min(100, Math.max(0, ((Date.now() - start) / (end - start)) * 100)));
+    if (fillEl) fillEl.style.width = pct + "%";
+    if (pctEl) pctEl.textContent = pct + "%";
+  }
 
   function tick() {
     const diff = deadline - Date.now();
     if (diff <= 0) {
       if (unitDays) unitDays.textContent = "0";
-      if (unitHours) unitHours.textContent = "0";
-      if (unitMinutes) unitMinutes.textContent = "0";
-      if (unitSeconds) unitSeconds.textContent = "0";
-      if (noteEl) noteEl.textContent = "Die Einreichungsphase ist beendet.";
+      if (unitHours) unitHours.textContent = "00";
+      if (unitMinutes) unitMinutes.textContent = "00";
+      if (unitSeconds) unitSeconds.textContent = "00";
+      if (noteEl) noteEl.textContent = "Einreichung beendet";
+      updatePhaseProgress();
       clearInterval(timer);
       return;
     }
@@ -98,45 +103,64 @@ function initCountdown() {
     if (unitHours) unitHours.textContent = String(hours).padStart(2, "0");
     if (unitMinutes) unitMinutes.textContent = String(minutes).padStart(2, "0");
     if (unitSeconds) unitSeconds.textContent = String(seconds).padStart(2, "0");
+    updatePhaseProgress();
   }
 
   tick();
   const timer = setInterval(tick, 1000);
 }
 
-/* ---------- Startseite: Kategorie-Teaser ---------- */
-function renderCategoryTeasers() {
-  const grid = document.querySelector("[data-category-teasers]");
-  if (!grid || typeof CATEGORIES === "undefined") return;
-
-  grid.innerHTML = CATEGORIES.slice(0, 6)
-    .map(
-      (cat) => `
-      <a class="category-card" href="kategorien.html#${cat.id}">
-        <span class="icon">${cat.icon}</span>
-        <h3>${cat.name}</h3>
-        <p>${cat.description}</p>
-      </a>`
-    )
-    .join("");
-}
-
-/* ---------- Kategorien-Seite: reine Übersicht (kein Voting während der Einreichungsphase) ---------- */
+/* ---------- Kategorien-Übersicht ---------- */
 function renderCategoryOverview() {
   const grid = document.querySelector("[data-category-overview]");
   if (!grid || typeof CATEGORIES === "undefined") return;
 
   grid.innerHTML = CATEGORIES.map(
-    (cat) => `
+    (cat, i) => `
       <div class="category-card" id="${cat.id}">
-        <span class="icon">${cat.icon}</span>
+        <div class="card-top">
+          <span class="icon">${cat.icon}</span>
+          <span class="num">${String(i + 1).padStart(2, "0")}</span>
+        </div>
         <h3>${cat.name}</h3>
         <p>${cat.description}</p>
       </div>`
   ).join("");
 }
 
-/* ---------- Gewinner-Seite ---------- */
+/* ---------- Live-Suche über die Kategorien ---------- */
+function initCategorySearch() {
+  const grid = document.querySelector("[data-category-overview]");
+  if (!grid) return;
+
+  const countEl = document.querySelector("#category-count");
+  const emptyEl = document.querySelector("#category-empty");
+  const cards = Array.from(grid.querySelectorAll(".category-card"));
+  const total = cards.length;
+
+  function updateCount(visible) {
+    if (!countEl) return;
+    countEl.textContent = visible === total ? `${total} Kategorien` : `${visible} von ${total}`;
+  }
+  updateCount(total);
+
+  const input = document.querySelector("#category-search");
+  if (!input) return;
+
+  input.addEventListener("input", () => {
+    const query = input.value.trim().toLowerCase();
+    let visible = 0;
+    cards.forEach((card) => {
+      const match = !query || card.textContent.toLowerCase().includes(query);
+      card.style.display = match ? "" : "none";
+      if (match) visible++;
+    });
+    updateCount(visible);
+    if (emptyEl) emptyEl.classList.toggle("visible", visible === 0);
+  });
+}
+
+/* ---------- Hall of Fame ---------- */
 function renderWinners() {
   const container = document.querySelector("[data-winners]");
   if (!container || typeof PAST_WINNERS === "undefined") return;
